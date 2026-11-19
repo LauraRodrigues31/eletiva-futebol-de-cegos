@@ -29,6 +29,8 @@ Uma experiência imersiva sobre **futebol de cegos**, com foco em **inclusão** 
 
 **Peneira** é uma experiência em realidade virtual no Meta Quest em que a pessoa tenta uma vaga na **seleção brasileira de futebol de cegos**. Ela coloca a venda, perde a visão aos poucos e passa por testes guiados só pelo som. No fim, recebe uma ficha técnica com as notas dela e descobre se passou na peneira.
 
+video ilustrativo para imaginação inicial da proposta: https://drive.google.com/file/d/1hIyOzje_Sr3W1rRpfTdUE-lknRyhm6Ay/view?usp=sharing 
+
 | | |
 |---|---|
 | **Papel da pessoa** | Candidata a uma vaga na seleção |
