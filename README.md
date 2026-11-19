@@ -72,12 +72,18 @@ Se funcionasse igual num vídeo, não precisaria ser imersivo. A experiência de
 | **Som** | Vem de um alto-falante parado | É espacial: virar a cabeça muda de onde vem o guizo e a voz do chamador |
 | **Corpo** | Fica sentado, assistindo | Coloca a venda com as mãos, se vira para achar a bola e chuta com o pé de verdade |
 
-### 4. Moldura: o que fica dentro
+### 4. Moldura: o que fica dentro, e se ela se mostra
 
-A experiência é um recorte: uma peneira em cinco etapas, não uma partida inteira.
+**O que fica dentro:** uma peneira da seleção brasileira de futebol de cegos. A quadra virtual está no lugar da quadra real, o jogador está no lugar de uma candidato. A moldura imita **o esporte**, não **a cegueira**: o que fica dentro é o teste de uma atleta, e não a vida de uma pessoa cega.
 
-- **Dentro:** vestiário, localização do guizo, silêncio e voy, pênalti e ficha técnica.
-- **Fora:** partida completa, multiplayer e publicação em loja.
+**Se ela se mostra:** a moldura aparece nas bordas e se esconde no meio.
+
+- **Na entrada, ela se mostra:** no vestiário, a pessoa coloca a venda com as próprias mãos. A venda é a moldura em forma de objeto: marca o momento em que o jogo começa, e é uma regra real que os atletas também seguem.
+- **Durante, ela aparece nos detalhes:** as ondas visuais do som são assumidamente um desenho nosso, não "o que uma pessoa cega vê".
+- **No pênalti, ela se esconde:** escuridão total, som espacial e chute com o pé. Aqui a imitação rompe a moldura e vira presença, e é isso que faz a pessoa sentir no corpo a precisão que o esporte exige.
+- **Na saída, ela volta a se mostrar:** a imagem retorna e a ficha técnica, com notas e veredito, deixa claro que tudo foi um teste. A pessoa tira a venda e sai com uma nota, não com a ideia de que "sabe como é ser cega".
+
+**Por que assim:** a moldura escondida é perigosa, porque quem não a percebe toma a imitação pelo real. No nosso caso, o perigo é a empatia de turista. Por isso a ilusão só é total no pênalti, o momento que mais precisa de presença, e a moldura aparece na entrada e na saída. Saber que é imitação é o que permite o prazer do desafio.
 
 ### 5. Corpo: onde fica e o que pode fazer
 
