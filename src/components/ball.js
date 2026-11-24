@@ -1,4 +1,4 @@
-// Bola: forma, posição e detecção de proximidade com a cabeça (spec, seção 11).
+// Bola: forma, posição e detecção de proximidade com a cabeça.
 // Uso: <a-entity id="bola" ball></a-entity>
 // Não mexe em som: a Anna coloca o guizo (sound posicional) nesta mesma entidade.
 import { CONFIG } from '../config.js';

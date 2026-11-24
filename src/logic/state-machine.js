@@ -1,4 +1,4 @@
-// Máquina de estados do jogo (spec, seção 8). Lógica pura, sem A-Frame.
+// Máquina de estados do jogo. Lógica pura, sem A-Frame.
 
 export const ESTADOS = Object.freeze({
   VESTIARIO: 'vestiario',

@@ -1,4 +1,4 @@
-// Contrato de eventos entre componentes (spec, seção 7; detalhes em docs/EVENTOS.md).
+// Contrato de eventos entre componentes (detalhes em docs/EVENTOS.md).
 // Todo evento é emitido NA CENA: sceneEl.emit(EVENTS.X, detalhe).
 // Use sempre estas constantes, nunca o texto solto, para evitar erro de digitação.
 

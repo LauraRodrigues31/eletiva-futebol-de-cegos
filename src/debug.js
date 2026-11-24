@@ -1,4 +1,4 @@
-// Modo debug (spec, seção 12): ligado com ?debug=1 na URL ou CONFIG.debug.
+// Modo debug: ligado com ?debug=1 na URL ou CONFIG.debug.
 import { CONFIG } from './config.js';
 import { TODOS_EVENTOS } from './events.js';
 

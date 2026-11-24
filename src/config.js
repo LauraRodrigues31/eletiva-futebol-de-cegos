@@ -1,4 +1,4 @@
-// Configuração central do jogo (spec, seção 6).
+// Configuração central do jogo.
 // Todo número ajustável mora aqui: nenhum componente deve ter número mágico.
 // Unidades: metros, segundos (m/s) e milissegundos.
 
@@ -11,7 +11,7 @@ export const CONFIG = {
     histerese: 0.1, // só volta a "dentro" depois de entrar mais isso (evita pisca-pisca)
   },
 
-  // Escala física → virtual (spec D1). 1 = tamanho real.
+  // Escala física → virtual. 1 = tamanho real.
   escala: 1,
 
   // Gol (medidas oficiais do futebol de 5: 3 m × 2 m).

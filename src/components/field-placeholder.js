@@ -1,4 +1,4 @@
-// Placeholders visuais de orientação: chão do campo e gol (spec, seção 5).
+// Placeholders visuais de orientação: chão do campo e gol.
 // Tudo é calculado a partir do config.js. A Anna pode trocar o visual final
 // mantendo os ids #campo e #gol.
 import { CONFIG } from '../config.js';

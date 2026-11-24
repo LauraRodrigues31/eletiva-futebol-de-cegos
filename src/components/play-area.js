@@ -1,4 +1,4 @@
-// Área de jogo: desenha o contorno no chão e avisa quando a cabeça sai/volta (spec, seção 10).
+// Área de jogo: desenha o contorno no chão e avisa quando a cabeça sai/volta.
 // Uso: <a-entity id="area" play-area></a-entity>
 // Emite area-exit / area-enter uma vez por travessia (com histerese).
 import { CONFIG } from '../config.js';

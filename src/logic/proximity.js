@@ -1,6 +1,6 @@
-// Proximidade entre a cabeça e a bola (spec, seção 11). Lógica pura.
+// Proximidade entre a cabeça e a bola. Lógica pura.
 
-/** Distância no plano do chão (x, z), ignorando a altura (spec D6). */
+/** Distância no plano do chão (x, z), ignorando a altura. */
 export function distanciaNoChao(a, b) {
   const dx = a.x - b.x;
   const dz = a.z - b.z;

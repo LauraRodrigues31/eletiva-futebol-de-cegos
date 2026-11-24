@@ -1,4 +1,4 @@
-// Painel de debug preso à visão e atalhos para avançar estados (spec, seção 12).
+// Painel de debug preso à visão e atalhos para avançar estados.
 // Uso: <a-entity id="camera" camera ... debug-hud>. Só faz algo com ?debug=1.
 import { CONFIG } from '../config.js';
 import { DEBUG, VERSAO } from '../debug.js';
