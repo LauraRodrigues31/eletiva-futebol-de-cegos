@@ -7,6 +7,16 @@ Projeto da eletiva **Experiências Imersivas**.
 - Laura Rodrigues
 - Anna Riciopo
 
+## Como jogar e testar
+
+- **Link (Quest 3):** https://laurarodrigues31.github.io/eletiva-futebol-de-cegos/
+- **Modo debug:** adicione `?debug=1` ao link. Aparece um painel com o estado do jogo, e o botão **B** do controle direito (ou a tecla **N** no computador) avança os estados. `?debug=1&estado=fase2` abre direto em uma fase.
+- **No computador:** rode `npx serve .` na pasta do projeto e abra o endereço mostrado com `?debug=1`. Clique e arraste para olhar em volta, use **WASD** para andar.
+- **Testes automáticos:** `node --test` (ou `npm test`).
+- **Antes de entrar no VR:** fique em pé sobre a marca no centro da área livre (3 × 3 m), olhando para onde o gol deve ficar, com o Guardian configurado e alguém acompanhando.
+
+Documentação técnica: [PRD](docs/PRD.md), [contrato de eventos](docs/EVENTOS.md) e [specs](docs/specs/).
+
 ## Macrotema
 
 Uma experiência imersiva sobre **futebol de cegos**, com foco em **inclusão** e em mudar a forma como as pessoas enxergam a modalidade, pois:
