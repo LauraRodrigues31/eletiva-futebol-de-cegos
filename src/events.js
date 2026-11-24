@@ -19,12 +19,13 @@ export const EVENTS = Object.freeze({
   BALL_SPAWNED: 'ball-spawned', // { position }
   BALL_REACHED: 'ball-reached', // { distance, timeMs }
   BALL_LEFT: 'ball-left', // { distance }
+  BALL_STOPPED: 'ball-stopped', // { position }
 
   // Chute e gol (Laura, quarta 25/11)
-  KICK: 'kick', // { direction, power, position }
+  KICK: 'kick', // { direction, power, position, hand }
   GOAL: 'goal', // { position }
-  POST_HIT: 'post-hit', // { side: 'left' | 'right' }
-  MISS: 'miss', // {}
+  POST_HIT: 'post-hit', // { side: 'left' | 'right', position }
+  MISS: 'miss', // { reason: 'fora' | 'trave' | 'curta' | 'saiu' }
 
   // Tentativas e fases (Laura, quinta 26/11)
   ATTEMPT_END: 'attempt-end', // { phase, attempt, result }

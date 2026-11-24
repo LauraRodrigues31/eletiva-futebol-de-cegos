@@ -84,6 +84,19 @@ export function destinoPorEvento(estado, evento) {
   return GATILHOS[evento]?.[estado] ?? null;
 }
 
+/**
+ * Monta o `detail` do evento state-change.
+ * `from` é o estado anterior (null na primeira emissão); `dados` é o novo estado.
+ */
+export function detalheStateChange(from, dados) {
+  return {
+    from,
+    to: dados.estado,
+    phase: dados.estado,
+    attempt: dados.tentativa,
+  };
+}
+
 /** Próximo estado na sequência (usado pelo modo debug para avançar). */
 export function proximoNaSequencia(estado) {
   const i = SEQUENCIA.indexOf(estado);

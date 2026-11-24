@@ -10,6 +10,7 @@ import {
   podeIr,
   destinoPorEvento,
   proximoNaSequencia,
+  detalheStateChange,
   GATILHOS,
 } from '../logic/state-machine.js';
 
@@ -83,11 +84,6 @@ AFRAME.registerSystem('game-state', {
   aplicar(novosDados, from) {
     this.dados = novosDados;
     this.inicioEstado = performance.now();
-    this.el.emit(EVENTS.STATE_CHANGE, {
-      from,
-      to: novosDados.estado,
-      phase: novosDados.estado,
-      attempt: novosDados.tentativa,
-    });
+    this.el.emit(EVENTS.STATE_CHANGE, detalheStateChange(from, novosDados));
   },
 });
