@@ -7,7 +7,6 @@
     <link rel="icon" href="data:," />
     <!-- A-Frame com versão fixada. -->
     <script src="https://aframe.io/releases/1.8.0/aframe.min.js"></script>
-    <!-- Nosso código: registra componentes e systems antes de a cena iniciar. -->
     <script type="module" src="./src/main.js"></script>
   </head>
   <body>
@@ -32,21 +31,24 @@
         <a-entity id="mao-direita" meta-touch-controls="hand: right"></a-entity>
       </a-entity>
 
-      <!-- ===================== LAURA: jogo ===================== -->
-      <!-- Placeholders de orientação (a Anna substitui o visual final). -->
-      <!-- Medidas e posições vêm do src/config.js. -->
       <a-entity id="campo" field-placeholder="parte: campo"></a-entity>
-      <!-- goal-zones: zonas de gol e trave no chão (só no modo debug). -->
       <a-entity id="gol" field-placeholder="parte: gol" goal-zones></a-entity>
 
-      <!-- Contorno da área física e aviso de saída (area-exit / area-enter). -->
+      <a-entity id="estadio" estadio></a-entity>
+
       <a-entity id="area" play-area></a-entity>
 
-      <!-- Bola. A Anna coloca o guizo (sound posicional) nesta mesma entidade. -->
       <a-entity id="bola" ball></a-entity>
 
-      <!-- ===================== ANNA: vestiário ===================== -->
-      <a-entity id="vestiario"></a-entity>
+      <a-entity id="vestiario" vestiario></a-entity>
+
+      <a-entity id="instrucoes" instrucoes></a-entity>
+
+      <a-entity id="venda-efeito" blindfold></a-entity>
+
+      <a-entity id="entrada-campo" cena-provisoria></a-entity>
+
+      <a-entity id="colisao" colisao></a-entity>
 
       <a-light type="ambient" intensity="0.6"></a-light>
       <a-light type="directional" intensity="0.8" position="1 4 2"></a-light>

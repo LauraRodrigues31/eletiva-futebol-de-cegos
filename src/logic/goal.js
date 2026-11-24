@@ -1,7 +1,7 @@
 // Zonas de gol e de trave. Lógica pura.
 //
 //          trave esq.                          trave dir.
-//   fora   |<-0,3 m->|        gol (2,7 m)        |<-0,3 m->|   fora
+//   fora   |<-0,15 m->|       gol (3,66 m)      |<-0,15 m->|  fora
 // ---------+---------+---------------------------+---------+---------  linha do gol
 //        -1,65     -1,35                        1,35      1,65    (x, valores padrão)
 import { posicaoGol, limitesArea } from './area.js';

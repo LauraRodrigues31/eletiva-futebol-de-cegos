@@ -253,6 +253,7 @@ Uma linha por sessão de teste, a mais recente no topo.
 
 | Data | Quem | Tipo | Versão / commit | Resultado | Observações |
 |---|---|---|---|---|---|
+| 24/11 | Claude | T1 | pós-conflito da `main` | ✅ 85/85 | Medidas oficiais da IBSA alinhadas no conflito da configuração |
 | 24/11 | Claude | T2 (Chrome headless) | `v0.2.0` | ✅ L-CHUTE-01 a 05, L-FISICA-01 a 04, L-GOL-01 a 05 | Mira do chute girando a câmera por código; trave a 23° e fora a 40° |
 | 24/11 | Claude | T1 | `v0.2.0` | ✅ 46/46 | Novos: `kick`, `physics`, `goal` e `detail` do `state-change` |
 | 24/11 | Claude | T2 (Chrome headless) | `v0.1.0` | ✅ L-CENA-01, L-ESTADO-01 a 05, L-AREA-01 a 03, L-BOLA-01 a 05 | Câmera movida por código para simular o andar |

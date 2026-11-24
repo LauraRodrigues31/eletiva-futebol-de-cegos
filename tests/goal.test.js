@@ -13,25 +13,25 @@ import { CONFIG } from '../src/config.js';
 const quase = (a, b, tol = 1e-9) => assert.ok(Math.abs(a - b) <= tol, `${a} ≈ ${b}`);
 const cfg = (gol = {}) => ({ ...CONFIG, gol: { ...CONFIG.gol, ...gol } });
 
-test('limites padrão: gol até 1,35 m e trave até 1,65 m do centro', () => {
+test('limites padrão: gol até 1,68 m e trave até 1,98 m do centro', () => {
   const { limiteGol, limiteTrave } = limitesDoGol(CONFIG);
-  quase(limiteGol, 1.35);
-  quase(limiteTrave, 1.65);
+  quase(limiteGol, 1.68);
+  quase(limiteTrave, 1.98);
 });
 
 test('classificação nos limites exatos', () => {
   assert.equal(classificarCruzamento(0, CONFIG), 'gol');
-  assert.equal(classificarCruzamento(1.35, CONFIG), 'gol');
-  assert.equal(classificarCruzamento(-1.35, CONFIG), 'gol');
-  assert.equal(classificarCruzamento(1.36, CONFIG), 'trave-direita');
-  assert.equal(classificarCruzamento(1.65, CONFIG), 'trave-direita');
-  assert.equal(classificarCruzamento(1.66, CONFIG), 'fora');
+  assert.equal(classificarCruzamento(1.68, CONFIG), 'gol');
+  assert.equal(classificarCruzamento(-1.68, CONFIG), 'gol');
+  assert.equal(classificarCruzamento(1.69, CONFIG), 'trave-direita');
+  assert.equal(classificarCruzamento(1.98, CONFIG), 'trave-direita');
+  assert.equal(classificarCruzamento(1.99, CONFIG), 'fora');
 });
 
 test('lado da trave: esquerda é x negativo (visão de quem chuta)', () => {
-  assert.equal(classificarCruzamento(-1.5, CONFIG), 'trave-esquerda');
-  assert.equal(classificarCruzamento(1.5, CONFIG), 'trave-direita');
-  assert.equal(classificarCruzamento(-2, CONFIG), 'fora');
+  assert.equal(classificarCruzamento(-1.8, CONFIG), 'trave-esquerda');
+  assert.equal(classificarCruzamento(1.8, CONFIG), 'trave-direita');
+  assert.equal(classificarCruzamento(-2.1, CONFIG), 'fora');
 });
 
 test('os limites acompanham a configuração', () => {
@@ -46,9 +46,9 @@ test('cruzamento interpolado entre dois quadros', () => {
 });
 
 test('bola rápida que "pularia" a trave é detectada pela interpolação', () => {
-  // Antes da linha em x = 1,2 (dentro), depois em x = 1,9 (fora): cruzou em 1,55, na trave.
-  const x = cruzamentoDaLinha({ x: 1.2, z: -4.3 }, { x: 1.9, z: -4.7 }, -4.5);
-  quase(x, 1.55);
+  // Antes da linha em x = 1,8 (na trave), depois em x = 2,1 (fora): cruzou em 1,95, na trave.
+  const x = cruzamentoDaLinha({ x: 1.8, z: -4.3 }, { x: 2.1, z: -4.7 }, -4.5);
+  quase(x, 1.95);
   assert.equal(classificarCruzamento(x, CONFIG), 'trave-direita');
 });
 

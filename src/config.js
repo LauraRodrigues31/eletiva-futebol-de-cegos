@@ -3,21 +3,19 @@
 // Unidades: metros, segundos (m/s) e milissegundos.
 
 export const CONFIG = {
-  // Área física livre onde a pessoa anda. O centro é a origem (0, 0, 0).
   area: {
-    largura: 3, // eixo x
-    profundidade: 3, // eixo z
-    margemAviso: 0.3, // avisa quando a cabeça chega a menos disso da borda
-    histerese: 0.1, // só volta a "dentro" depois de entrar mais isso (evita pisca-pisca)
+    largura: 3, 
+    profundidade: 3, 
+    margemAviso: 0.3, 
+    histerese: 0.1, 
   },
 
   // Escala física → virtual. 1 = tamanho real.
   escala: 1,
 
-  // Gol (medidas oficiais do futebol de 5: 3 m × 2 m).
   gol: {
-    largura: 3,
-    altura: 2,
+    largura: 3.66,
+    altura: 2.14,
     distanciaDaArea: 3, // da borda frontal da área até a linha do gol
     raioTrave: 0.05,
     profundidadeRede: 1, // até onde a bola vai depois do gol
@@ -30,11 +28,11 @@ export const CONFIG = {
   },
 
   bola: {
-    raio: 0.1, // ~62 cm de circunferência
-    raioAlcance: 0.5, // "alcançou" a menos de 0,5 m (PRD)
-    raioSaida: 0.7, // só volta a "longe" acima de 0,7 m (histerese)
+    raio: 0.1,
+    raioAlcance: 0.5, 
+    raioSaida: 0.7, 
     posicaoTutorial: { x: 0, z: -1 },
-    velocidadeFase3: 0.3, // m/s (usado em 01/12)
+    velocidadeFase3: 0.3, 
   },
 
   chute: {
@@ -59,7 +57,6 @@ export const CONFIG = {
     fase3: 3,
   },
 
-  // Intervalos de checagem (ms).
   intervalos: {
     proximidade: 50,
     area: 100,
@@ -67,5 +64,111 @@ export const CONFIG = {
     mira: 100,
   },
 
-  debug: false, // também pode ser ligado com ?debug=1 na URL
+  debug: false, 
+  vestiario: {
+    sala: {
+      minX: -3,
+      maxX: 3,
+      minZ: -2.4, 
+      maxZ: 2.6,
+      altura: 3,
+    },
+    cabines: {
+      quantidade: 5,
+      espacamento: 0.9, 
+      largura: 0.82,
+      altura: 2.1,
+      profundidade: 0.5,
+      numeros: [7, 3, 10, 9, 5], 
+      doJogador: 3, 
+      nomeJogador: 'VOCÊ',
+    },
+    banco: {
+      z: -1.45, 
+      altura: 0.45,
+      profundidade: 0.36,
+    },
+    alcance: {
+      entrar: 0.9,
+      sair: 1.1,
+    },
+    cores: {
+      parede: '#c9ced4',
+      chao: '#8d949c',
+      teto: '#e6e8eb',
+      madeira: '#8a5a35',
+      camisa: '#f2c230',
+      numeroCamisa: '#1f6b3a',
+      destaque: '#ffd21f',
+      venda: '#0b0b0b',
+    },
+    intervaloAlcance: 100,
+    colisao: {
+      raioCabeca: 0.2,
+      distanciaEscurecer: 0.15,
+    },
+  },
+
+  venda: {
+    duracaoAproximar: 600, 
+    duracaoFaixa: 900, 
+    duracaoFade: 1200,
+    pausaNoEscuro: 800,
+    opacidadeDebug: 0.5,
+    visaoLivre: true,
+  },
+
+  estadio: {
+    linhas: { espessura: 0.08, faixaGrama: 4, marcaTerco: 0.5 },
+    circuloCentral: 3,
+    areaPenalti: { raio: 6 },
+    marcas: { penalti: 6, segundoPenalti: 8, raio: 0.1 },
+    areaGoleiro: { alemDaTrave: 1, profundidade: 2 },
+    terco: 12,
+    trave: { espessura: 0.08 },
+    rede: { profundidade: 1 },
+    banda: { altura: 1, espessura: 0.06, inclinacao: 0.08 },
+    entorno: { lateral: 5, fundo: 5 },
+    alambrado: { distancia: 3.5, altura: 4 },
+    arquibancada: {
+      fileirasLaterais: 8,
+      fileirasFundo: 6,
+      alturaDegrau: 0.42,
+      profundidadeDegrau: 0.8,
+      espacamento: 0.6,
+      ocupacao: 0.75,
+      semente: 2026,
+    },
+    pessoas: {
+      distanciaChamador: 2,
+      afastamentoTecnico: 1.2,
+      afastamentoBanco: 2.6,
+      reservasPorBanco: 3,
+      espacamentoBanco: 0.6,
+      avancoTecnico: 4,
+      recuoArbitro: 1.5,
+      avancoArbitro: 2,
+    },
+    torres: { altura: 20 },
+    cores: {
+      gramaClara: '#3f8a4a',
+      gramaEscura: '#357a40',
+      linha: '#f4f4f4',
+      entorno: '#2c4a33',
+      chao: '#15201a',
+      banda: '#1d3f8f',
+      bandaDetalhe: '#ffd21f',
+      concreto: '#80868e',
+      assento: '#2a5bb0',
+      trave: '#f2f2f2',
+      timeCasa: '#f2c230',
+      timeVisitante: '#d8dde3',
+      goleiroCasa: '#e8542e',
+      goleiroVisitante: '#7a3fb0',
+      tecnico: '#1f6b3a',
+      arbitro: '#111111',
+      colete: '#ff7a00',
+      calca: '#1d2733',
+    },
+  },
 };
