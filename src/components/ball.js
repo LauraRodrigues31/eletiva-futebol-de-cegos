@@ -1,6 +1,6 @@
 // Bola: forma, posição e detecção de proximidade com a cabeça (spec, seção 11).
 // Uso: <a-entity id="bola" ball></a-entity>
-// Não mexe em som: a Dev B coloca o guizo (sound posicional) nesta mesma entidade.
+// Não mexe em som: a Anna coloca o guizo (sound posicional) nesta mesma entidade.
 import { CONFIG } from '../config.js';
 import { EVENTS } from '../events.js';
 import { ehFaseJogavel } from '../logic/state-machine.js';

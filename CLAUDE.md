@@ -13,5 +13,5 @@
 
 - Experiência em VR (Meta Quest 3) sobre futebol de cegos, em A-Frame/WebXR, sem bundler. Requisitos em [docs/PRD.md](docs/PRD.md).
 - Specs de desenvolvimento em [docs/specs/](docs/specs/). O código segue a spec; mudanças de rumo são feitas primeiro na spec.
-- Contrato de eventos entre Dev A (Laura: jogabilidade e dados) e Dev B (Anna: áudio, visual e UX) em [docs/EVENTOS.md](docs/EVENTOS.md).
+- Contrato de eventos entre Laura (jogabilidade e dados) e Anna (áudio, visual e UX) em [docs/EVENTOS.md](docs/EVENTOS.md).
 - Testes: `node --test` (lógica pura em `src/logic/`).

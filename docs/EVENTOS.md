@@ -1,6 +1,6 @@
 # Contrato de eventos
 
-Os componentes do jogo conversam por **eventos emitidos na cena**. Assim a Dev A (jogabilidade e dados) e a Dev B (áudio, visual e UX) trabalham em arquivos separados, e uma não precisa conhecer o código da outra.
+Os componentes do jogo conversam por **eventos emitidos na cena**. Assim a Laura (jogabilidade e dados) e a Anna (áudio, visual e UX) trabalham em arquivos separados, e uma não precisa conhecer o código da outra.
 
 > Para mudar o nome ou o `detail` de um evento, combine com a outra dev e atualize este arquivo **e** o [`src/events.js`](../src/events.js) no mesmo commit.
 
@@ -16,21 +16,21 @@ Os componentes do jogo conversam por **eventos emitidos na cena**. Assim a Dev A
 
 | Evento | Quem emite | Quem ouve | `detail` | Quando fica pronto |
 |---|---|---|---|---|
-| `state-change` | game-state (A) | todos | `{ from, to, phase, attempt }` | ter 24/11 |
-| `blindfold-on` | venda (B) | game-state | `{}` | B |
-| `field-entered` | transição para o campo (B) | game-state | `{}` | B |
-| `continue` | telas e textos (B) | game-state | `{}` | B |
-| `area-exit` | play-area (A) | B (aviso sonoro) | `{ position }` | ter 24/11 |
-| `area-enter` | play-area (A) | B | `{ position }` | ter 24/11 |
-| `ball-spawned` | ball (A) | B (guizo, ondas, balão) | `{ position }` | ter 24/11 |
-| `ball-reached` | ball (A) | game-state, B (some o balão) | `{ distance, timeMs }` | ter 24/11 |
-| `ball-left` | ball (A) | B | `{ distance }` | ter 24/11 |
-| `kick` | kicker (A) | ball, gravador (B) | `{ direction, power, position }` | qua 25/11 |
-| `goal` | goal (A) | game-state, torcida (B) | `{ position }` | qua 25/11 |
-| `post-hit` | goal (A) | B (onda na trave) | `{ side: 'left' \| 'right' }` | qua 25/11 |
-| `miss` | goal (A) | game-state, B | `{}` | qua 25/11 |
-| `attempt-end` | game-state (A) | B (tela de resultado) | `{ phase, attempt, result }` | qui 26/11 |
-| `phase-end` | game-state (A) | B (texto de transição) | `{ phase }` | qui 26/11 |
+| `state-change` | game-state (Laura) | todos | `{ from, to, phase, attempt }` | ter 24/11 |
+| `blindfold-on` | venda (Anna) | game-state | `{}` | Anna |
+| `field-entered` | transição para o campo (Anna) | game-state | `{}` | Anna |
+| `continue` | telas e textos (Anna) | game-state | `{}` | Anna |
+| `area-exit` | play-area (Laura) | Anna (aviso sonoro) | `{ position }` | ter 24/11 |
+| `area-enter` | play-area (Laura) | Anna | `{ position }` | ter 24/11 |
+| `ball-spawned` | ball (Laura) | Anna (guizo, ondas, balão) | `{ position }` | ter 24/11 |
+| `ball-reached` | ball (Laura) | game-state, Anna (some o balão) | `{ distance, timeMs }` | ter 24/11 |
+| `ball-left` | ball (Laura) | Anna | `{ distance }` | ter 24/11 |
+| `kick` | kicker (Laura) | ball, gravador (Anna) | `{ direction, power, position }` | qua 25/11 |
+| `goal` | goal (Laura) | game-state, torcida (Anna) | `{ position }` | qua 25/11 |
+| `post-hit` | goal (Laura) | Anna (onda na trave) | `{ side: 'left' \| 'right' }` | qua 25/11 |
+| `miss` | goal (Laura) | game-state, Anna | `{}` | qua 25/11 |
+| `attempt-end` | game-state (Laura) | Anna (tela de resultado) | `{ phase, attempt, result }` | qui 26/11 |
+| `phase-end` | game-state (Laura) | Anna (texto de transição) | `{ phase }` | qui 26/11 |
 
 ### Detalhes
 
@@ -47,10 +47,10 @@ vestiario → entrada-campo → tutorial → fim-tutorial → fase2 → fase3 �
 
 | Estado | Entra quando | O que acontece |
 |---|---|---|
-| `vestiario` | início (e reinício) | Pessoa coloca a venda (B). |
-| `entrada-campo` | `blindfold-on` | Transição e som do estádio (B). |
+| `vestiario` | início (e reinício) | Pessoa coloca a venda (Anna). |
+| `entrada-campo` | `blindfold-on` | Transição e som do estádio (Anna). |
 | `tutorial` | `field-entered` | 3 tentativas com pistas visuais. |
-| `fim-tutorial` | fim das tentativas do tutorial | Tela "agora vale pontos" (B). |
+| `fim-tutorial` | fim das tentativas do tutorial | Tela "agora vale pontos" (Anna). |
 | `fase2` | `continue` | Bola em posição aleatória, sem pistas. |
 | `fase3` | fim das tentativas da fase 2 | Bola em movimento. |
 | `resultado` | fim das tentativas da fase 3 | Ficha técnica e replay. |
@@ -64,7 +64,7 @@ const estado = sceneEl.systems['game-state'].estadoAtual(); // 'tutorial'
 
 ## Entidades com id fixo
 
-| Id | O que é | Observação para a Dev B |
+| Id | O que é | Observação para a Anna |
 |---|---|---|
 | `#rig` | Jogador (origem) | — |
 | `#camera` | Cabeça do jogador | Para efeitos presos à visão (venda) |
@@ -72,9 +72,9 @@ const estado = sceneEl.systems['game-state'].estadoAtual(); // 'tutorial'
 | `#bola` | Bola | **Coloque o guizo aqui** (`sound` posicional): ele acompanha a bola sozinho. O componente `ball` não mexe em som. |
 | `#gol` | Gol | Para as ondas nas traves |
 | `#campo` | Chão do campo | Pode trocar o visual |
-| `#vestiario` | Vestiário | Livre para a Dev B |
+| `#vestiario` | Vestiário | Livre para a Anna |
 
-## Exemplo (Dev B)
+## Exemplo (Anna)
 
 ```js
 import { EVENTS } from '../events.js';

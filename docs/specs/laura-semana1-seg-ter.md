@@ -1,10 +1,10 @@
-# Spec: Dev A, segunda (23/11) e terça (24/11)
+# Spec: Laura, segunda (23/11) e terça (24/11)
 
 > Status: **aprovada, em implementação**
-> Responsável: Laura (Dev A: jogabilidade e dados)
+> Responsável: Laura (jogabilidade e dados)
 > Referências: [PRD](../PRD.md) e o plano diário da dupla
 
-Esta spec descreve o que será construído nas tarefas de Dev A de segunda e terça, como cada parte funciona e como saberemos que está pronta. Depois de aprovada, ela é o contrato: o código segue a spec, e qualquer mudança de rumo é feita primeiro aqui.
+Esta spec descreve o que será construído nas tarefas da Laura de segunda e terça, como cada parte funciona e como saberemos que está pronta. Depois de aprovada, ela é o contrato: o código segue a spec, e qualquer mudança de rumo é feita primeiro aqui.
 
 > **Regra de git:** o Claude só desenvolve e roda testes. **Ele não faz commit, push, PR nem merge.** Todos os commits e envios ao GitHub são feitos **manualmente pela Laura**, com a conta **LauraRodrigues31**, para o Claude não aparecer como contribuidor. Ver [CLAUDE.md](../../CLAUDE.md) e a [seção 14](#14-ordem-de-implementação-testes-e-commits).
 
@@ -12,25 +12,25 @@ Esta spec descreve o que será construído nas tarefas de Dev A de segunda e ter
 
 ## 1. Escopo
 
-### Dentro (Dev A)
+### Dentro (Laura)
 
 | Dia | Tarefa | Seção |
 |---|---|---|
 | Seg | Publicação com HTTPS (GitHub Pages) | [4](#4-publicação-com-https) |
 | Seg | Cena A-Frame de teste abrindo no Quest 3 pelo link | [5](#5-cena-base) |
 | Seg | Arquivo de configuração | [6](#6-arquivo-de-configuração) |
-| Seg | Contrato de eventos (para fechar com a Dev B) | [7](#7-contrato-de-eventos) |
+| Seg | Contrato de eventos (para fechar com a Anna) | [7](#7-contrato-de-eventos) |
 | Seg | Máquina de estados com eventos | [8](#8-máquina-de-estados-game-state) |
 | Ter | Mapeamento da área física para o campo virtual | [9](#9-área-de-jogo-e-mapeamento-físico--virtual) |
 | Ter | Jogador anda fisicamente dentro da área (req. 2) | [10](#10-andar-dentro-da-área) |
 | Ter | Bola com detecção de proximidade (`ball-reached`) | [11](#11-bola-e-detecção-de-proximidade) |
 | Ter | Teste no Quest: andar até a bola | [13](#13-roteiro-de-teste-no-quest) |
 
-Extra (ferramenta de Dev A para conseguir testar com a tela escura): **modo debug** com painel de informações dentro do VR ([12](#12-modo-debug)).
+Extra (ferramenta da Laura para conseguir testar com a tela escura): **modo debug** com painel de informações dentro do VR ([12](#12-modo-debug)).
 
-### Fora (fica com a Dev B ou com outro dia)
+### Fora (fica com a Anna ou com outro dia)
 
-- Sons (guizo, ambiente, torcida), efeito da venda, visual do vestiário e do campo, ondas, balões e textos são da **Dev B**. Esta spec só deixa os **pontos de encaixe** (ids de entidades e eventos) para ela conectar.
+- Sons (guizo, ambiente, torcida), efeito da venda, visual do vestiário e do campo, ondas, balões e textos são da **Anna**. Esta spec só deixa os **pontos de encaixe** (ids de entidades e eventos) para ela conectar.
 - Chute, física da bola, gol e trave: **quarta**.
 - Ciclo de 3 tentativas e registro de tentativas: **quinta**.
 
@@ -45,7 +45,7 @@ Cada decisão tem uma recomendação. Se concordar com todas, basta aprovar a sp
 | D1 | **Escala física → virtual** | **1:1.** Andar 1 m de verdade = 1 m no jogo. A área de 3 × 3 m é um pedaço do campo em tamanho real, na frente do gol. | Escalar (ex.: 3 m físicos = 20 m virtuais). Mais "campo", mas o corpo e o som espacial deixam de bater com a distância real, o que confunde e pode causar enjoo. |
 | D2 | **Hospedagem** | **GitHub Pages**, publicando direto da branch `main` (raiz). O repo já é público e no GitHub, sem nova conta nem build. | Vercel: previews por branch, mas exige conta e configuração. |
 | D3 | **Ferramentas** | **Sem bundler e sem npm no site.** A-Frame **1.8.0** por CDN e o nosso código em módulos ES (`<script type="module">`). Node só para rodar os testes (`node --test`), sem dependências. | Vite/npm: mais estrutura, mais coisa para dar errado em 2 semanas. |
-| D4 | **Fluxo de git** | **Decidido:** todo o trabalho de Dev A na branch **`devA-Laura`**, com commits pequenos **feitos pela Laura** (o Claude não commita nem dá push). O GitHub Pages publica a `main`, então, para testar no Quest, um bloco pronto (testes passando) entra na `main` por **pull request** da `devA-Laura`, aberto e aceito pela Laura. Antes de abrir o PR, trazer a `main` para a branch (`git merge origin/main`) para resolver conflitos com a Dev B do nosso lado. | — |
+| D4 | **Fluxo de git** | **Decidido:** todo o trabalho da Laura na branch **`devA-Laura`**, com commits pequenos **feitos pela Laura** (o Claude não commita nem dá push). O GitHub Pages publica a `main`, então, para testar no Quest, um bloco pronto (testes passando) entra na `main` por **pull request** da `devA-Laura`, aberto e aceito pela Laura. Antes de abrir o PR, trazer a `main` para a branch (`git merge origin/main`) para resolver conflitos com a Anna do nosso lado. | — |
 | D5 | **Origem do mundo** | O centro da área no chão é a origem `(0, 0, 0)`. A pessoa **começa sobre a marca no chão, olhando para o gol**. O gol fica no sentido `-z` (à frente). | — |
 | D6 | **Distância até a bola** | Medida no **plano do chão (x, z)**, entre a **cabeça** projetada no chão e a bola. Não rastreamos o pé (já previsto no PRD). | — |
 | D7 | **Nomes** | Eventos em inglês (como no plano: `ball-reached`, `kick`...). Estados, configuração e comentários em português. | Tudo em português. |
@@ -81,7 +81,7 @@ tests/
   area.test.js
   proximity.test.js
 docs/
-  EVENTOS.md                contrato de eventos para a Dev B (seção 7)
+  EVENTOS.md                contrato de eventos para a Anna (seção 7)
   specs/                    esta spec
 ```
 
@@ -118,8 +118,8 @@ docs/
 - `<a-scene>` com `webxr="referenceSpaceType: local-floor"` (o chão real fica em `y = 0`) e `renderer="colorManagement: true"`.
 - **Rig do jogador** (`#rig`) na origem, com a câmera (`#camera`) dentro dele e altura de 1,6 m no desktop. No VR, a altura e a posição vêm do próprio óculos.
 - Controles do Quest (`#mao-esquerda` e `#mao-direita` com `meta-touch-controls`). Vão ser usados na quarta para o chute.
-- **Placeholders visuais simples**, só para orientação e debug (a Dev B substitui pelo visual final): chão do campo, contorno da área de jogo e gol de 3 × 2 m (tamanho oficial do futebol de 5).
-- **Ids fixos** que a Dev B pode usar: `#vestiario`, `#campo`, `#bola`, `#gol`, `#camera`, `#rig`.
+- **Placeholders visuais simples**, só para orientação e debug (a Anna substitui pelo visual final): chão do campo, contorno da área de jogo e gol de 3 × 2 m (tamanho oficial do futebol de 5).
+- **Ids fixos** que a Anna pode usar: `#vestiario`, `#campo`, `#bola`, `#gol`, `#camera`, `#rig`.
 - No desktop, `wasd-controls` na câmera, para simular o andar.
 
 **Pronto quando:**
@@ -185,25 +185,25 @@ Com `distanciaDaArea: 3`, a linha do gol fica em `z = -(1,5 + 3) = -4,5`. Uma bo
 
 | Evento | Quem emite | Quem ouve | `detail` | Quando é implementado |
 |---|---|---|---|---|
-| `state-change` | game-state (A) | todos | `{ from, to, phase, attempt }` | **seg** |
-| `blindfold-on` | venda (B) | game-state | `{}` | B, seg |
-| `field-entered` | transição de campo (B) | game-state | `{}` | B, ter |
-| `continue` | telas e textos (B) | game-state | `{}` | B, quando houver telas |
-| `area-exit` | play-area (A) | B (aviso sonoro), debug | `{ position }` | **ter** |
-| `area-enter` | play-area (A) | B, debug | `{ position }` | **ter** |
-| `ball-spawned` | ball (A) | B (guizo, ondas, balão) | `{ position }` | **ter** |
-| `ball-reached` | ball (A) | game-state, B (some o balão) | `{ distance, timeMs }` | **ter** |
-| `ball-left` | ball (A) | B, debug | `{ distance }` | **ter** |
-| `kick` | kicker (A) | ball, gravador (B) | `{ direction, power, position }` | qua |
-| `goal` | goal (A) | game-state, torcida (B) | `{ position }` | qua |
-| `post-hit` | goal (A) | B (onda na trave) | `{ side: 'left' \| 'right' }` | qua |
-| `miss` | goal (A) | game-state, B | `{}` | qua |
-| `attempt-end` | game-state (A) | B (tela de resultado) | `{ phase, attempt, result }` | qui |
-| `phase-end` | game-state (A) | B (texto de transição) | `{ phase }` | qui |
+| `state-change` | game-state (Laura) | todos | `{ from, to, phase, attempt }` | **seg** |
+| `blindfold-on` | venda (Anna) | game-state | `{}` | Anna, seg |
+| `field-entered` | transição de campo (Anna) | game-state | `{}` | Anna, ter |
+| `continue` | telas e textos (Anna) | game-state | `{}` | Anna, quando houver telas |
+| `area-exit` | play-area (Laura) | Anna (aviso sonoro), debug | `{ position }` | **ter** |
+| `area-enter` | play-area (Laura) | Anna, debug | `{ position }` | **ter** |
+| `ball-spawned` | ball (Laura) | Anna (guizo, ondas, balão) | `{ position }` | **ter** |
+| `ball-reached` | ball (Laura) | game-state, Anna (some o balão) | `{ distance, timeMs }` | **ter** |
+| `ball-left` | ball (Laura) | Anna, debug | `{ distance }` | **ter** |
+| `kick` | kicker (Laura) | ball, gravador (Anna) | `{ direction, power, position }` | qua |
+| `goal` | goal (Laura) | game-state, torcida (Anna) | `{ position }` | qua |
+| `post-hit` | goal (Laura) | Anna (onda na trave) | `{ side: 'left' \| 'right' }` | qua |
+| `miss` | goal (Laura) | game-state, Anna | `{}` | qua |
+| `attempt-end` | game-state (Laura) | Anna (tela de resultado) | `{ phase, attempt, result }` | qui |
+| `phase-end` | game-state (Laura) | Anna (texto de transição) | `{ phase }` | qui |
 
 **Posições** são sempre `{ x, y, z }` em metros, no sistema do mundo. **Tempos** são em milissegundos.
 
-Entregável: `docs/EVENTOS.md` com essa tabela e um exemplo de uso, para a Dev B revisar. **Ação sua:** mandar para a Anna e combinar se ela precisa de algum evento a mais.
+Entregável: `docs/EVENTOS.md` com essa tabela e um exemplo de uso, para a Anna revisar. **Ação sua:** mandar para a Anna e combinar se ela precisa de algum evento a mais.
 
 ---
 
@@ -303,7 +303,7 @@ No VR, **andar já funciona sozinho**: o Quest rastreia a cabeça e o A-Frame mo
 2. Componente **`play-area`** (na cena):
    - A cada ~100 ms, lê a posição da cabeça no plano do chão.
    - Ao sair da área (contando a `margemAviso`), emite `area-exit` **uma vez**. Ao voltar, emite `area-enter` **uma vez**. Não dispara a cada quadro.
-   - O aviso em si (som ou voz) é da Dev B. No modo debug, o contorno da área fica vermelho enquanto a pessoa está fora.
+   - O aviso em si (som ou voz) é da Anna. No modo debug, o contorno da área fica vermelho enquanto a pessoa está fora.
 3. **Segurança** (vai para o roteiro de operação, não é código): o limite de segurança (Guardian) do Quest deve ser configurado maior que a área e com o espaço livre, e sempre deve haver uma pessoa acompanhando.
 
 **Pronto quando:**
@@ -321,7 +321,7 @@ Componente **`ball`** na entidade `#bola`.
 - Ter a forma da bola (esfera com `raio` do config) apoiada no chão (`y = raio`).
 - `colocarEm({ x, z })` posiciona a bola e emite `ball-spawned`. Em `tutorial`, a bola usa `bola.posicaoTutorial`. O sorteio de posição da fase 2 fica para a segunda, 30/11.
 - **Detectar a proximidade** com a cabeça do jogador e emitir `ball-reached` e `ball-left`.
-- **Não toca em som.** A Dev B coloca o guizo (`sound` posicional) na mesma entidade `#bola`, então ele acompanha a bola automaticamente.
+- **Não toca em som.** A Anna coloca o guizo (`sound` posicional) na mesma entidade `#bola`, então ele acompanha a bola automaticamente.
 
 ### Regra de proximidade (`src/logic/proximity.js`)
 
@@ -341,7 +341,7 @@ Componente **`ball`** na entidade `#bola`.
 
 - Fica visível e checando proximidade só em `tutorial`, `fase2` e `fase3` (reage a `state-change`).
 - Em `vestiario`, `entrada-campo`, `fim-tutorial` e `resultado`, fica escondida e sem checagem.
-- Visibilidade não é o mesmo que "aparecer na tela": na quinta e depois, a Dev B decide o que fica visível com a venda. Aqui "escondida" significa só "fora do jogo".
+- Visibilidade não é o mesmo que "aparecer na tela": na quinta e depois, a Anna decide o que fica visível com a venda. Aqui "escondida" significa só "fora do jogo".
 
 **Pronto quando:**
 - [ ] `tests/proximity.test.js` cobre: distância ignorando a altura, entrada abaixo de 0,5, ficar perto entre 0,5 e 0,7, saída acima de 0,7 e nenhum evento repetido.
@@ -354,7 +354,7 @@ Componente **`ball`** na entidade `#bola`.
 Ligado com `?debug=1` na URL ou `debug: true` no config. É a ferramenta para testar no Quest quando a tela estiver escura por causa da venda.
 
 - **Painel no VR** (`debug-hud`), preso à câmera e no canto da visão, mostrando: estado, tentativa, posição da cabeça (x, z), distância até a bola, perto/longe e dentro/fora da área. Atualiza a cada ~200 ms.
-- **Avançar de estado:** tecla `N` no desktop e botão **B** do controle direito no Quest. Avança para o próximo estado da tabela, para dar para percorrer tudo antes das partes da Dev B existirem.
+- **Avançar de estado:** tecla `N` no desktop e botão **B** do controle direito no Quest. Avança para o próximo estado da tabela, para dar para percorrer tudo antes das partes da Anna existirem.
 - **Pular para um estado:** `?estado=fase2` na URL.
 - Contorno da área e gol sempre visíveis no debug, mesmo com a venda.
 - Log no console de todos os eventos do contrato.
@@ -466,7 +466,7 @@ Antes de cada commit, confira com `git config user.email` que a identidade é a 
 
 | Risco | Mitigação |
 |---|---|
-| A Dev B mexer no `index.html` ao mesmo tempo e dar conflito | Cada uma no seu bloco do `index.html`, marcado por comentário (`<!-- DEV B: vestiário -->`); componentes em arquivos separados; trabalho na `devA-Laura` com `git merge origin/main` antes de cada PR. |
+| A Anna mexer no `index.html` ao mesmo tempo e dar conflito | Cada uma no seu bloco do `index.html`, marcado por comentário (`<!-- ANNA: vestiário -->`); componentes em arquivos separados; trabalho na `devA-Laura` com `git merge origin/main` antes de cada PR. |
 | Testar no Quest exige PR e merge na `main` (o Pages só publica uma branch) | PRs pequenos e frequentes, um por bloco testável, abertos pela Laura. Se isso travar os testes no óculos, avaliar Vercel (preview por branch) na quarta. |
 | A origem do `local-floor` depende de onde a pessoa estava ao entrar no VR | Roteiro de operação: entrar no VR sobre a marca, olhando para a frente. Se der problema, adicionar um "recentralizar" (botão) na quarta. |
 | Cache do navegador do Quest mostrar uma versão antiga | Adicionar `?v=<número>` no link ou recarregar à força. Mostrar a versão no painel de debug. |
