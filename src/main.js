@@ -2,6 +2,8 @@ import './systems/game-state.js';
 import './components/field-placeholder.js';
 import './components/play-area.js';
 import './components/ball.js';
+import './components/kicker.js';
+import './components/goal-zones.js';
 import './components/debug-hud.js';
 import './components/painel-texto.js';
 import './components/instrucoes.js';

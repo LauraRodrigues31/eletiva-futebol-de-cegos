@@ -1,4 +1,4 @@
-// Máquina de estados do jogo (spec, seção 8). Lógica pura, sem A-Frame.
+// Máquina de estados do jogo. Lógica pura, sem A-Frame.
 
 export const ESTADOS = Object.freeze({
   VESTIARIO: 'vestiario',
@@ -82,6 +82,19 @@ export function transicionar(dados, para) {
 /** Destino que um evento provoca a partir do estado atual, ou null se o evento não vale agora. */
 export function destinoPorEvento(estado, evento) {
   return GATILHOS[evento]?.[estado] ?? null;
+}
+
+/**
+ * Monta o `detail` do evento state-change.
+ * `from` é o estado anterior (null na primeira emissão); `dados` é o novo estado.
+ */
+export function detalheStateChange(from, dados) {
+  return {
+    from,
+    to: dados.estado,
+    phase: dados.estado,
+    attempt: dados.tentativa,
+  };
 }
 
 /** Próximo estado na sequência (usado pelo modo debug para avançar). */

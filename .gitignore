@@ -1,0 +1,5 @@
+# Specs de desenvolvimento (SDD): ficam só no computador, não vão para o GitHub
+SDD/
+
+# Dependências locais, se algum dia forem instaladas
+node_modules/

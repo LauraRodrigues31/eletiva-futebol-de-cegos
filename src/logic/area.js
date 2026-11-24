@@ -1,4 +1,4 @@
-// Área de jogo e mapeamento físico → virtual (spec, seção 9).
+// Área de jogo e mapeamento físico → virtual.
 // Funções puras: recebem a configuração e não dependem do A-Frame.
 //
 // Sistema de coordenadas: origem no centro da área, no chão.

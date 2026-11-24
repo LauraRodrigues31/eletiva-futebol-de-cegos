@@ -1,12 +1,11 @@
-// Placeholders visuais de orientação: chão do campo e gol (spec, seção 5).
-// Tudo é calculado a partir do config.js. A Dev B pode trocar o visual final
+// Placeholders visuais de orientação: chão do campo e gol.
+// Tudo é calculado a partir do config.js. A Anna pode trocar o visual final
 // mantendo os ids #campo e #gol.
 import { CONFIG } from '../config.js';
 import { posicaoGol } from '../logic/area.js';
 
 const COR_CAMPO = '#2f5d3a';
 const COR_TRAVE = '#f2f2f2';
-const RAIO_TRAVE = 0.05;
 
 function criar(pai, tag, atributos) {
   const el = document.createElement(tag);
@@ -38,12 +37,12 @@ AFRAME.registerComponent('field-placeholder', {
 
   // Duas traves e o travessão, com a linha do gol em z = gol.z.
   montarGol(gol) {
-    const { largura, altura } = CONFIG.gol;
+    const { largura, altura, raioTrave } = CONFIG.gol;
     this.el.object3D.position.set(gol.x, 0, gol.z);
     for (const lado of [-1, 1]) {
       criar(this.el, 'a-cylinder', {
         position: `${(lado * largura) / 2} ${altura / 2} 0`,
-        radius: RAIO_TRAVE,
+        radius: raioTrave,
         height: altura,
         color: COR_TRAVE,
       });
@@ -51,8 +50,8 @@ AFRAME.registerComponent('field-placeholder', {
     criar(this.el, 'a-cylinder', {
       position: `0 ${altura} 0`,
       rotation: '0 0 90',
-      radius: RAIO_TRAVE,
-      height: largura + RAIO_TRAVE * 2,
+      radius: raioTrave,
+      height: largura + raioTrave * 2,
       color: COR_TRAVE,
     });
   },

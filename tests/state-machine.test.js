@@ -10,6 +10,7 @@ import {
   destinoPorEvento,
   proximoNaSequencia,
   entrarEm,
+  detalheStateChange,
 } from '../src/logic/state-machine.js';
 
 test('começa no vestiário, sem tentativa', () => {
@@ -67,6 +68,32 @@ test('próximo na sequência dá a volta e rejeita estado inválido', () => {
   assert.equal(proximoNaSequencia(ESTADOS.VESTIARIO), ESTADOS.ENTRADA_CAMPO);
   assert.equal(proximoNaSequencia(ESTADOS.RESULTADO), ESTADOS.VESTIARIO);
   assert.equal(proximoNaSequencia('xyz'), null);
+});
+
+test('detail do state-change na primeira emissão: from null', () => {
+  assert.deepEqual(detalheStateChange(null, estadoInicial()), {
+    from: null,
+    to: 'vestiario',
+    phase: 'vestiario',
+    attempt: 0,
+  });
+});
+
+test('detail do state-change ao entrar numa fase jogável', () => {
+  const r = transicionar({ estado: ESTADOS.ENTRADA_CAMPO, tentativa: 0 }, ESTADOS.TUTORIAL);
+  assert.deepEqual(detalheStateChange(ESTADOS.ENTRADA_CAMPO, r.dados), {
+    from: 'entrada-campo',
+    to: 'tutorial',
+    phase: 'tutorial',
+    attempt: 1,
+  });
+});
+
+test('detail do state-change: phase sempre igual a to', () => {
+  for (const estado of SEQUENCIA) {
+    const d = detalheStateChange('x', entrarEm(estado));
+    assert.equal(d.phase, d.to);
+  }
 });
 
 test('estadoValido', () => {
