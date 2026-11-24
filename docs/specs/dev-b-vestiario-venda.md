@@ -12,7 +12,7 @@
 | Interação | Só a venda do jogador pode ser usada. É preciso **ir até ela** e **clicar**. |
 | Instruções | Texto preso à visão que diz o que fazer agora. |
 | Venda | Animação: a venda voa até o rosto, uma faixa preta desce e a tela escurece. Em seguida emite `blindfold-on`. |
-| Cena provisória | Em `entrada-campo`: tela preta (a pessoa está vendada) com um texto de "em construção". Ainda **não** emite `field-entered`. |
+| Cena provisória | Em `entrada-campo`: tela preta (a pessoa está vendada) com um texto de "em construção". Ainda **não** emite `field-entered`. Agora mostra o estádio, com a visão livre provisória ([spec do estádio](dev-b-estadio.md)). |
 
 Fica para depois: o som do tecido e da porta, a entrada em campo de verdade (com o som do estádio e `field-entered`) e o quadro tático decorativo.
 
@@ -23,7 +23,7 @@ Fica para depois: o som do tecido e da porta, a entrada em campo de verdade (com
 | B1 | **Texto em canvas.** Todo texto da Dev B é desenhado num `<canvas>` e usado como textura de um plano (`src/visual/canvas.js` e o componente `painel-texto`). | As fontes padrão do A-Frame não mostram "ç", "ã" nem "ê". O canvas não precisa de dependência nova. |
 | B2 | **Apontadores só no vestiário.** No computador, `cursor="rayOrigin: mouse"` na cena. No Quest, `laser-controls` nas mãos, com o gatilho fazendo o clique. Tudo é ligado e desligado por JS quando o estado entra e sai de `vestiario`. | O bloco da Dev A no HTML fica intacto e o laser não atrapalha o chute. |
 | B3 | **Alcance.** O clique só vale com a cabeça a menos de `vestiario.alcance.entrar` (0,9 m) da venda, medido no chão. A pessoa só volta a "longe" acima de `alcance.sair` (1,1 m). | Faz a pessoa **ir até** a venda, e a histerese impede que a instrução fique piscando. |
-| B4 | **A venda fica posta.** A camada preta fica ligada em todos os estados depois do vestiário, menos em `resultado`. Com `?debug=1`, ela cai para `venda.opacidadeDebug` (0,5). | É o que o PRD pede ("a tela escurece"). A Dev A ainda consegue ler o painel de debug. |
+| B4 | **A venda fica posta.** A camada preta fica ligada em todos os estados depois do vestiário, menos em `resultado`. Com `?debug=1`, ela cai para `venda.opacidadeDebug` (0,5). | É o que o PRD pede ("a tela escurece"). A Dev A ainda consegue ler o painel de debug. **Provisório:** com `venda.visaoLivre: true`, a camada fica invisível no campo (decisão E6 da [spec do estádio](dev-b-estadio.md)). |
 | B5 | **Campo escondido no vestiário.** Enquanto o estado for `vestiario`, `#campo`, `#gol` e o contorno da área (`#area`) ficam com `visible: false`. | Os dois chãos ficam no mesmo lugar e piscariam um sobre o outro, e o contorno branco não faz parte do vestiário. Só a visibilidade muda; o código da Dev A não é tocado. O `play-area` continua checando a área e emitindo os eventos. |
 | B6 | **Colisão no vestiário** (`colisao`, `src/logic/colisao.js`). A cabeça é um círculo de `colisao.raioCabeca` (0,2 m) no chão. **No computador (WASD)**, a câmera é empurrada para fora das paredes, das cabines, do banco, da porta e do quadro, e desliza ao longo deles. **No VR**, o corpo anda de verdade e não dá para impedir: a visão escurece conforme a cabeça entra numa parede ou numa cabine (fica toda preta a `distanciaEscurecer`, 0,15 m). O banco não conta no VR, porque é baixo e a pessoa se inclina sobre ele para pegar a venda. | Empurrar o `#rig` no VR quebraria a escala 1:1 e deixaria a área de segurança (`play-area`) no lugar errado. Escurecer é o padrão de "cabeça na parede" em VR. |
 

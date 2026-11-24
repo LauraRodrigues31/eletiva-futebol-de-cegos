@@ -3,11 +3,9 @@ import { DEBUG } from '../debug.js';
 import { ESTADOS } from '../logic/state-machine.js';
 import { Animador } from '../logic/animador.js';
 
-const TEXTO =
-  'Você está vendado.\n\n' +
-  'Próxima etapa: entrada em campo.\n' +
-  '(cena em construção)';
+const TEXTO = 'Entrada em campo\n(cena em construção)\n\nVisão liberada para teste.';
 const DICA_DEBUG = '\n\nDebug: tecla N ou botão B avança.';
+const TEMPO_NA_TELA = 5000;
 
 AFRAME.registerComponent('cena-provisoria', {
   init() {
@@ -20,9 +18,10 @@ AFRAME.registerComponent('cena-provisoria', {
       texto: TEXTO + (DEBUG ? DICA_DEBUG : ''),
       largura: 1.1,
       altura: 0.6,
-      tamanhoFonte: 56,
+      tamanhoFonte: 52,
       cor: '#f2f2f2',
-      fundo: 'nenhum',
+      fundo: '#000000',
+      opacidadeFundo: 0.6,
       opacidade: 0,
       sobreTudo: true,
       ordem: 1003,
@@ -30,17 +29,23 @@ AFRAME.registerComponent('cena-provisoria', {
     document.querySelector('#camera').appendChild(this.painel);
 
     this.aoMudarEstado = (e) => {
-      if (e.detail.to === ESTADOS.ENTRADA_CAMPO) this.fadePara(1, 1200);
+      if (e.detail.to === ESTADOS.ENTRADA_CAMPO) this.mostrarPorUmTempo();
       else this.fadePara(0, 200);
     };
     this.cena.addEventListener(EVENTS.STATE_CHANGE, this.aoMudarEstado);
+  },
+
+  async mostrarPorUmTempo() {
+    if (!(await this.fadePara(1, 1000))) return;
+    if (!(await this.animador.esperar(TEMPO_NA_TELA))) return;
+    this.fadePara(0, 1000);
   },
 
   fadePara(alvo, duracao) {
     const painel = this.painel.components['painel-texto'];
     const atual = painel ? painel.data.opacidade : 0;
     this.animador.parar();
-    this.animador.animar({
+    return this.animador.animar({
       duracao,
       de: atual,
       para: alvo,

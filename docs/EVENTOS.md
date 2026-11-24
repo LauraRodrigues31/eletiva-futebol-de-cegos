@@ -74,9 +74,10 @@ const estado = sceneEl.systems['game-state'].estadoAtual(); // 'tutorial'
 | `#campo` | Chão do campo | Pode trocar o visual |
 | `#vestiario` | Vestiário | Livre para a Dev B. No estado `vestiario`, esconde `#campo`, `#gol` e o contorno `#area` |
 | `#instrucoes` | Instrução presa à visão (Dev B) | `components.instrucoes.mostrar(texto)` / `esconder()` |
-| `#venda-efeito` | Camada preta da venda (Dev B) | Ligada em todos os estados, menos `vestiario` e `resultado`. Com `?debug=1`, fica a 50% depois de posta |
+| `#venda-efeito` | Camada preta da venda (Dev B) | Ligada em todos os estados, menos `vestiario` e `resultado`. Com `?debug=1`, fica a 50% depois de posta. **Provisório:** com `CONFIG.venda.visaoLivre: true`, fica invisível |
 | `#colisao` | Colisão do jogador (Dev B) | Só no `vestiario`. No computador, empurra `#camera` para fora dos objetos. No VR, só escurece a visão (não mexe no `#rig`) |
-| `#entrada-campo` | Texto provisório de `entrada-campo` (Dev B) | Ainda não emite `field-entered` |
+| `#entrada-campo` | Texto provisório de `entrada-campo` (Dev B) | Ainda não emite `field-entered`. Some sozinho depois de alguns segundos |
+| `#estadio` | Estádio (Dev B) | Visível em todos os estados, menos `vestiario`. Desenha o gramado com as linhas por cima do `#campo` e a rede em volta do `#gol`, sem mexer neles |
 
 ## Exemplo (Dev B)
 

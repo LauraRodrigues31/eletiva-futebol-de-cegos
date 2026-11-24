@@ -118,7 +118,7 @@ docs/
 - `<a-scene>` com `webxr="referenceSpaceType: local-floor"` (o chão real fica em `y = 0`) e `renderer="colorManagement: true"`.
 - **Rig do jogador** (`#rig`) na origem, com a câmera (`#camera`) dentro dele e altura de 1,6 m no desktop. No VR, a altura e a posição vêm do próprio óculos.
 - Controles do Quest (`#mao-esquerda` e `#mao-direita` com `meta-touch-controls`). Vão ser usados na quarta para o chute.
-- **Placeholders visuais simples**, só para orientação e debug (a Dev B substitui pelo visual final): chão do campo, contorno da área de jogo e gol de 3 × 2 m (tamanho oficial do futebol de 5).
+- **Placeholders visuais simples**, só para orientação e debug (a Dev B substitui pelo visual final): chão do campo, contorno da área de jogo e gol de 3,66 × 2,14 m (tamanho oficial atual da IBSA; a regra antiga usava 3 × 2, de futsal).
 - **Ids fixos** que a Dev B pode usar: `#vestiario`, `#campo`, `#bola`, `#gol`, `#camera`, `#rig`.
 - No desktop, `wasd-controls` na câmera, para simular o andar.
 
@@ -144,10 +144,10 @@ export const CONFIG = {
   // Escala física → virtual (D1). 1 = tamanho real.
   escala: 1,
 
-  // Gol (medidas oficiais do futebol de 5: 3 m × 2 m).
+  // Gol (medidas oficiais atuais da IBSA: 3,66 m × 2,14 m).
   gol: {
-    largura: 3,
-    altura: 2,
+    largura: 3.66,
+    altura: 2.14,
     distanciaDaArea: 3,  // da borda frontal da área até a linha do gol
   },
 

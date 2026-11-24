@@ -95,8 +95,13 @@ AFRAME.registerComponent('blindfold', {
   ligar() {
     this.animador.parar();
     this.estado = 'posta';
-    this.grupo.visible = true;
     this.faixa.visible = false;
+    if (CONFIG.venda.visaoLivre) {
+      this.grupo.visible = false;
+      this.esfera.material.opacity = 0;
+      return;
+    }
+    this.grupo.visible = true;
     const atual = this.esfera.material.opacity;
     this.esfera.material.opacity = 1;
     if (DEBUG) {

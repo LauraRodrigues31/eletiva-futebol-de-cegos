@@ -9,4 +9,5 @@ import './components/blindfold.js';
 import './components/venda-interativa.js';
 import './components/vestiario.js';
 import './components/cena-provisoria.js';
+import './components/estadio.js';
 import './components/colisao.js';

@@ -7,10 +7,10 @@ function criarCanvas(largura, altura) {
   return { canvas, ctx: canvas.getContext('2d') };
 }
 
-function paraTextura(canvas, { repetir = null } = {}) {
+function paraTextura(canvas, { repetir = null, anisotropia = 4 } = {}) {
   const textura = new THREE.CanvasTexture(canvas);
   textura.colorSpace = THREE.SRGBColorSpace;
-  textura.anisotropy = 4;
+  textura.anisotropy = anisotropia;
   if (repetir) {
     textura.wrapS = textura.wrapT = THREE.RepeatWrapping;
     textura.repeat.set(repetir.x, repetir.y);
@@ -190,5 +190,78 @@ export function texturaFaixa() {
   ctx.globalCompositeOperation = 'source-atop';
   ctx.fillStyle = 'rgba(60,60,60,0.35)';
   for (let y = 0; y < 512; y += 6) ctx.fillRect(0, y, 256, 2);
+  return paraTextura(canvas);
+}
+
+export function texturaCampo({ limites, segmentos, arcos, pontos }, { espessura, raioMarca, faixa, cores }) {
+  const largura = limites.maxX - limites.minX;
+  const comprimento = limites.maxZ - limites.minZ;
+  const pxPorMetro = 1024 / largura;
+  const { canvas, ctx } = criarCanvas(1024, Math.round(comprimento * pxPorMetro));
+  const px = (x) => (x - limites.minX) * pxPorMetro;
+  const pz = (z) => (z - limites.minZ) * pxPorMetro;
+
+  const faixas = Math.ceil(comprimento / faixa);
+  for (let i = 0; i < faixas; i++) {
+    ctx.fillStyle = i % 2 === 0 ? cores.gramaClara : cores.gramaEscura;
+    ctx.fillRect(0, pz(limites.minZ + i * faixa), canvas.width, faixa * pxPorMetro + 1);
+  }
+
+  const meia = (espessura * pxPorMetro) / 2;
+  ctx.strokeStyle = cores.linha;
+  ctx.fillStyle = cores.linha;
+  ctx.lineWidth = espessura * pxPorMetro;
+  ctx.lineCap = 'butt';
+  const limitar = (v, min, max) => Math.min(max - meia, Math.max(min + meia, v));
+  for (const { a, b } of segmentos) {
+    ctx.beginPath();
+    ctx.moveTo(limitar(px(a.x), 0, canvas.width), limitar(pz(a.z), 0, canvas.height));
+    ctx.lineTo(limitar(px(b.x), 0, canvas.width), limitar(pz(b.z), 0, canvas.height));
+    ctx.stroke();
+  }
+  for (const { centro, raio, inicio, fim } of arcos) {
+    ctx.beginPath();
+    ctx.arc(px(centro.x), pz(centro.z), raio * pxPorMetro, inicio, fim);
+    ctx.stroke();
+  }
+  for (const p of pontos) {
+    ctx.beginPath();
+    ctx.arc(px(p.x), pz(p.z), raioMarca * pxPorMetro, 0, Math.PI * 2);
+    ctx.fill();
+  }
+  return paraTextura(canvas, { anisotropia: 16 });
+}
+
+export function texturaBanda({ texto, cor, corDetalhe, repetir }) {
+  const { canvas, ctx } = criarCanvas(1024, 128);
+  ctx.fillStyle = cor;
+  ctx.fillRect(0, 0, 1024, 128);
+  ctx.fillStyle = corDetalhe;
+  ctx.fillRect(0, 0, 1024, 10);
+  ctx.fillStyle = 'rgba(255,255,255,0.9)';
+  ctx.font = `800 58px ${FONTE}`;
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillText(texto, 512, 72);
+  return paraTextura(canvas, { repetir });
+}
+
+export function texturaRede({ repetir }) {
+  const { canvas, ctx } = criarCanvas(64, 64);
+  ctx.strokeStyle = 'rgba(245,245,245,0.85)';
+  ctx.lineWidth = 3;
+  ctx.strokeRect(0, 0, 64, 64);
+  return paraTextura(canvas, { repetir });
+}
+
+export function texturaCeu() {
+  const { canvas, ctx } = criarCanvas(4, 512);
+  const g = ctx.createLinearGradient(0, 0, 0, 512);
+  g.addColorStop(0, '#04070f');
+  g.addColorStop(0.42, '#0f1a33');
+  g.addColorStop(0.5, '#2a3550');
+  g.addColorStop(1, '#0b0f16');
+  ctx.fillStyle = g;
+  ctx.fillRect(0, 0, 4, 512);
   return paraTextura(canvas);
 }
