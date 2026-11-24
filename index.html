@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="utf-8" />
+    <title>Futebol de Cegos: Peneira</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="icon" href="data:," />
+    <!-- A-Frame com versão fixada (spec D3). -->
+    <script src="https://aframe.io/releases/1.8.0/aframe.min.js"></script>
+    <!-- Nosso código: registra componentes e systems antes de a cena iniciar. -->
+    <script type="module" src="./src/main.js"></script>
+  </head>
+  <body>
+    <a-scene
+      webxr="referenceSpaceType: local-floor"
+      renderer="colorManagement: true"
+      background="color: #1a1d22"
+    >
+      <!-- ===================== DEV A: jogador ===================== -->
+      <!-- Origem (0,0,0) = marca no chão, no centro da área. O gol fica em -z. -->
+      <a-entity id="rig" position="0 0 0">
+        <a-entity
+          id="camera"
+          camera
+          look-controls
+          wasd-controls="acceleration: 20"
+          position="0 1.6 0"
+          debug-hud
+        ></a-entity>
+        <a-entity id="mao-esquerda" meta-touch-controls="hand: left"></a-entity>
+        <a-entity id="mao-direita" meta-touch-controls="hand: right"></a-entity>
+      </a-entity>
+
+      <!-- ===================== DEV A: jogo ===================== -->
+      <!-- Placeholders de orientação (a Dev B substitui o visual final). -->
+      <!-- Medidas e posições vêm do src/config.js. -->
+      <a-entity id="campo" field-placeholder="parte: campo"></a-entity>
+      <a-entity id="gol" field-placeholder="parte: gol"></a-entity>
+
+      <!-- Contorno da área física e aviso de saída (area-exit / area-enter). -->
+      <a-entity id="area" play-area></a-entity>
+
+      <!-- Bola. A Dev B coloca o guizo (sound posicional) nesta mesma entidade. -->
+      <a-entity id="bola" ball></a-entity>
+
+      <!-- ===================== DEV B: vestiário ===================== -->
+      <a-entity id="vestiario"></a-entity>
+
+      <a-light type="ambient" intensity="0.6"></a-light>
+      <a-light type="directional" intensity="0.8" position="1 4 2"></a-light>
+    </a-scene>
+  </body>
+</html>
