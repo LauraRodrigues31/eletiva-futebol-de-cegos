@@ -18,7 +18,8 @@
     >
       <!-- ===================== LAURA: jogador ===================== -->
       <!-- Origem (0,0,0) = marca no chão, no centro da área. O gol fica em -z. -->
-      <a-entity id="rig" position="0 0 0">
+      <!-- kicker: gatilho dos controles e barra de espaço chutam a bola. -->
+      <a-entity id="rig" position="0 0 0" kicker>
         <a-entity
           id="camera"
           camera
@@ -35,7 +36,8 @@
       <!-- Placeholders de orientação (a Anna substitui o visual final). -->
       <!-- Medidas e posições vêm do src/config.js. -->
       <a-entity id="campo" field-placeholder="parte: campo"></a-entity>
-      <a-entity id="gol" field-placeholder="parte: gol"></a-entity>
+      <!-- goal-zones: zonas de gol e trave no chão (só no modo debug). -->
+      <a-entity id="gol" field-placeholder="parte: gol" goal-zones></a-entity>
 
       <!-- Contorno da área física e aviso de saída (area-exit / area-enter). -->
       <a-entity id="area" play-area></a-entity>

@@ -3,7 +3,7 @@ import { CONFIG } from './config.js';
 import { TODOS_EVENTOS } from './events.js';
 
 /** Versão do jogo, mostrada no painel de debug. Aumente a cada entrega na main. */
-export const VERSAO = '0.1.0';
+export const VERSAO = '0.2.0';
 
 const params = new URLSearchParams(window.location.search);
 
