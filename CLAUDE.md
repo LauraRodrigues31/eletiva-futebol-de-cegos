@@ -12,6 +12,7 @@
 ## Projeto
 
 - Experiência em VR (Meta Quest 3) sobre futebol de cegos, em A-Frame/WebXR, sem bundler. Requisitos em [docs/PRD.md](docs/PRD.md).
-- Specs de desenvolvimento em [docs/specs/](docs/specs/). O código segue a spec; mudanças de rumo são feitas primeiro na spec.
+- Specs de desenvolvimento (SDD) ficam na pasta `SDD/`, na raiz. Ela está no `.gitignore`: **as specs não vão para o GitHub**, só existem no computador da Laura. O código segue a spec; mudanças de rumo são feitas primeiro na spec.
+- Documentação que vai para o GitHub fica em `docs/` (PRD, contrato de eventos, testes). Não referencie arquivos de `SDD/` em documentos de `docs/`, no README ou no código, porque esses links quebram para quem clona o repositório.
 - Contrato de eventos entre Laura (jogabilidade e dados) e Anna (áudio, visual e UX) em [docs/EVENTOS.md](docs/EVENTOS.md).
-- Testes: `node --test` (lógica pura em `src/logic/`).
+- Testes: `node --test` (lógica pura em `src/logic/`). O que é testado e como está em [docs/TESTES.md](docs/TESTES.md): ao implementar uma funcionalidade, adicione nele as checagens dela e registre as execuções no histórico.

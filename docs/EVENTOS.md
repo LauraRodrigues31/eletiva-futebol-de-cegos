@@ -25,10 +25,11 @@ Os componentes do jogo conversam por **eventos emitidos na cena**. Assim a Laura
 | `ball-spawned` | ball (Laura) | Anna (guizo, ondas, balão) | `{ position }` | ter 24/11 |
 | `ball-reached` | ball (Laura) | game-state, Anna (some o balão) | `{ distance, timeMs }` | ter 24/11 |
 | `ball-left` | ball (Laura) | Anna | `{ distance }` | ter 24/11 |
-| `kick` | kicker (Laura) | ball, gravador (Anna) | `{ direction, power, position }` | qua 25/11 |
-| `goal` | goal (Laura) | game-state, torcida (Anna) | `{ position }` | qua 25/11 |
-| `post-hit` | goal (Laura) | Anna (onda na trave) | `{ side: 'left' \| 'right' }` | qua 25/11 |
-| `miss` | goal (Laura) | game-state, Anna | `{}` | qua 25/11 |
+| `ball-stopped` | ball (Laura) | game-state, Anna | `{ position }` | qua 25/11 |
+| `kick` | kicker (Laura) | ball, gravador (Anna) | `{ direction, power, position, hand }` | qua 25/11 |
+| `goal` | ball (Laura) | game-state, torcida (Anna) | `{ position }` | qua 25/11 |
+| `post-hit` | ball (Laura) | Anna (onda na trave) | `{ side: 'left' \| 'right', position }` | qua 25/11 |
+| `miss` | ball (Laura) | game-state, Anna | `{ reason }` | qua 25/11 |
 | `attempt-end` | game-state (Laura) | Anna (tela de resultado) | `{ phase, attempt, result }` | qui 26/11 |
 | `phase-end` | game-state (Laura) | Anna (texto de transição) | `{ phase }` | qui 26/11 |
 
@@ -38,6 +39,20 @@ Os componentes do jogo conversam por **eventos emitidos na cena**. Assim a Laura
 - **`ball-reached`**: disparado **uma vez** quando a cabeça fica a menos de 0,5 m da bola (medido no chão, ignorando a altura). `timeMs` é o tempo desde o último `ball-spawned`. Só dispara de novo depois de um `ball-left`.
 - **`ball-left`**: disparado **uma vez** quando a cabeça se afasta mais de 0,7 m.
 - **`area-exit` / `area-enter`**: `area-exit` dispara quando a cabeça chega a menos de 0,3 m da borda da área; `area-enter` quando volta a mais de 0,4 m. Um evento por travessia, sem repetição.
+- **`kick`**: o chute só vale com a bola parada no lugar, perto (depois de um `ball-reached`) e numa fase jogável. `direction` é `{ x, y: 0, z }` com comprimento 1 (no chão). `power` é sempre `1` por enquanto (força fixa). `position` é onde a bola estava. `hand` é `'right'`, `'left'` ou `'keyboard'` (barra de espaço no computador).
+- **`goal`**: `position` é onde a bola cruzou a linha do gol.
+- **`post-hit`**: `side` é a trave da esquerda ou da direita, do ponto de vista de quem chuta. Sempre vem seguido de um `miss` com `reason: 'trave'` (bater na trave conta como erro).
+- **`miss`**: `reason` é `'fora'` (passou ao lado do gol), `'trave'` (bateu na trave), `'curta'` (parou antes do gol ou passou do tempo máximo) ou `'saiu'` (saiu do campo sem chegar ao gol).
+- **`ball-stopped`**: a bola parou depois de um chute. Depois dele, a bola espera ser recolocada (pelo ciclo de tentativas ou pelo modo debug), o que gera um novo `ball-spawned`.
+
+### Ordem dos eventos em cada chute
+
+```
+kick → (post-hit)? → goal | miss → ball-stopped
+```
+
+- Todo chute termina com **exatamente um** `goal` **ou** um `miss`.
+- Depois do `kick`, a bola **para de emitir** `ball-reached` e `ball-left` até o próximo `ball-spawned` (assim o balão não reaparece com a bola rolando).
 
 ## Estados do jogo
 

@@ -1,4 +1,4 @@
-// System da máquina de estados (spec, seção 8).
+// System da máquina de estados.
 // Acesso: sceneEl.systems['game-state'].estadoAtual()
 import { EVENTS } from '../events.js';
 import { DEBUG, ESTADO_DA_URL, registrarLogDeEventos } from '../debug.js';
@@ -10,6 +10,7 @@ import {
   podeIr,
   destinoPorEvento,
   proximoNaSequencia,
+  detalheStateChange,
   GATILHOS,
 } from '../logic/state-machine.js';
 
@@ -77,17 +78,12 @@ AFRAME.registerSystem('game-state', {
   aoEvento(evento) {
     const destino = destinoPorEvento(this.dados.estado, evento);
     if (destino) this.ir(destino);
-    // Evento no estado errado: ignorado de propósito (spec, seção 8).
+    // Evento no estado errado: ignorado de propósito.
   },
 
   aplicar(novosDados, from) {
     this.dados = novosDados;
     this.inicioEstado = performance.now();
-    this.el.emit(EVENTS.STATE_CHANGE, {
-      from,
-      to: novosDados.estado,
-      phase: novosDados.estado,
-      attempt: novosDados.tentativa,
-    });
+    this.el.emit(EVENTS.STATE_CHANGE, detalheStateChange(from, novosDados));
   },
 });
