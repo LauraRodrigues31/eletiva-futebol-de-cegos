@@ -1,0 +1,10 @@
+{
+  "name": "futebol-de-cegos",
+  "private": true,
+  "type": "module",
+  "description": "Experiência imersiva sobre futebol de cegos (A-Frame / WebXR). Sem dependências: o package.json existe só para os testes.",
+  "scripts": {
+    "test": "node --test",
+    "dev": "npx serve ."
+  }
+}
