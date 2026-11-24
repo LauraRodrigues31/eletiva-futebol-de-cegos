@@ -15,7 +15,7 @@ Projeto da eletiva **Experiências Imersivas**.
 - **Testes automáticos:** `node --test` (ou `npm test`).
 - **Antes de entrar no VR:** fique em pé sobre a marca no centro da área livre (3 × 3 m), olhando para onde o gol deve ficar, com o Guardian configurado e alguém acompanhando.
 
-Documentação técnica: [PRD](docs/PRD.md), [contrato de eventos](docs/EVENTOS.md) e [specs](docs/specs/).
+Documentação técnica: [PRD](docs/PRD.md), [contrato de eventos](docs/EVENTOS.md) e [testes](docs/TESTES.md).
 
 ## Macrotema
 
