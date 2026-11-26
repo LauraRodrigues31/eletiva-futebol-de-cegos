@@ -1,8 +1,9 @@
 import { CONFIG } from '../config.js';
 import { EVENTS } from '../events.js';
-import { DEBUG } from '../debug.js';
+import { DEBUG, VISAO_DA_URL } from '../debug.js';
 import { ESTADOS } from '../logic/state-machine.js';
 import { Animador } from '../logic/animador.js';
+import { visaoInicial } from '../logic/visao.js';
 import { texturaFaixa } from '../visual/canvas.js';
 
 const RAIO_ESFERA = 0.4;
@@ -18,6 +19,7 @@ AFRAME.registerComponent('blindfold', {
     this.cena = this.el.sceneEl;
     this.animador = new Animador();
     this.estado = 'tirada';
+    this.visaoLivre = visaoInicial(VISAO_DA_URL, CONFIG.venda.visaoLivre);
 
     this.grupo = new THREE.Group();
     this.grupo.visible = false;
@@ -57,6 +59,27 @@ AFRAME.registerComponent('blindfold', {
       else this.ligar();
     };
     this.cena.addEventListener(EVENTS.STATE_CHANGE, this.aoMudarEstado);
+
+    if (DEBUG) {
+      this.aoTeclar = (e) => {
+        if (e.code === 'KeyV' && !e.repeat) this.alternarVisao();
+      };
+      this.aoBotaoY = () => this.alternarVisao();
+      this.maoEsquerda = document.querySelector('#mao-esquerda');
+      window.addEventListener('keydown', this.aoTeclar);
+      this.maoEsquerda?.addEventListener('ybuttondown', this.aoBotaoY);
+    }
+  },
+
+  alternarVisao() {
+    this.visaoLivre = !this.visaoLivre;
+    console.log(`[debug] visão ${this.visaoLivre ? 'livre' : 'vendada'}`);
+    if (this.estado === 'posta') this.aplicarVisao();
+  },
+
+  aplicarVisao() {
+    this.grupo.visible = !this.visaoLivre;
+    this.esfera.material.opacity = this.visaoLivre ? 0 : 1;
   },
 
   async colocar() {
@@ -96,22 +119,7 @@ AFRAME.registerComponent('blindfold', {
     this.animador.parar();
     this.estado = 'posta';
     this.faixa.visible = false;
-    if (CONFIG.venda.visaoLivre) {
-      this.grupo.visible = false;
-      this.esfera.material.opacity = 0;
-      return;
-    }
-    this.grupo.visible = true;
-    const atual = this.esfera.material.opacity;
-    this.esfera.material.opacity = 1;
-    if (DEBUG) {
-      this.animador.animar({
-        duracao: 600,
-        de: Math.max(atual, CONFIG.venda.opacidadeDebug),
-        para: CONFIG.venda.opacidadeDebug,
-        aoAtualizar: (o) => (this.esfera.material.opacity = o),
-      });
-    }
+    this.aplicarVisao();
   },
 
   desligar() {
@@ -129,6 +137,10 @@ AFRAME.registerComponent('blindfold', {
 
   remove() {
     this.cena.removeEventListener(EVENTS.STATE_CHANGE, this.aoMudarEstado);
+    if (DEBUG) {
+      window.removeEventListener('keydown', this.aoTeclar);
+      this.maoEsquerda?.removeEventListener('ybuttondown', this.aoBotaoY);
+    }
     this.grupo.removeFromParent();
     for (const m of [this.esfera, this.faixa]) {
       m.geometry.dispose();

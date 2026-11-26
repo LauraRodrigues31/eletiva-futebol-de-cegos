@@ -55,6 +55,7 @@ Este documento diz **o que** é testado no projeto e **como** testar. Ele é viv
    | Mirar (depois de preparar) | a mira amarela aparece no centro da tela; a bola vai exatamente onde ela aponta, inclusive na altura (rasteiro, alto, travessão, por cima) |
    | Chutar (depois de preparar) | clique esquerdo com o mouse travado, ou barra de espaço |
    | Avançar o estado do jogo (só com debug) | N |
+   | Ligar e desligar a visão (camada preta da venda, só com debug) | V |
    | Recolocar a bola no lugar (com ou sem debug) | R |
 
    Ao sair do vestiário (e ao voltar para ele), a câmera volta ao centro da área, de frente para o gol.
@@ -64,6 +65,7 @@ Este documento diz **o que** é testado no projeto e **como** testar. Ele é viv
 
 **Atalhos de URL** (só com `?debug=1`):
 - `?debug=1&estado=fase2` abre direto em um estado (`vestiario`, `entrada-campo`, `tutorial`, `fim-tutorial`, `fase2`, `fase3`, `resultado`).
+- `?debug=1&visao=0` abre vendado (camada preta) e `?debug=1&visao=1` abre com a visão livre. Sem `visao`, vale `CONFIG.venda.visaoLivre`.
 
 ### T3. Teste no Quest 3
 
@@ -79,6 +81,7 @@ Este documento diz **o que** é testado no projeto e **como** testar. Ele é viv
 | Preparar o chute (bola perto e parada) | **grip** (botão lateral) de qualquer controle; vibra fraco |
 | Chutar (depois de preparar) | **gatilho** de qualquer controle. A bola vai para onde o controle aponta, inclusive na altura. No Quest não há mira na tela |
 | Avançar o estado do jogo (só com debug) | **B** (controle direito) |
+| Ligar e desligar a visão (só com debug) | **Y** (controle esquerdo) |
 | Recolocar a bola no lugar (com ou sem debug) | **A** (controle direito) |
 
 Com `?debug=1`, depois de preparar o chute, uma **linha azul** vai da bola até o ponto mirado (na linha do gol, com a altura), e o chão na linha do gol mostra as **zonas**: verde = gol, vermelho = trave.
@@ -89,10 +92,13 @@ Com `?debug=1`, depois de preparar o chute, uma **linha azul** vai da bola até 
 
 ## 2. Testes automáticos (T1)
 
-Situação em 25/11: **127 testes, todos passando.**
+Situação em 26/11: **146 testes, todos passando.**
 
 | Arquivo | O que cobre | Testes |
 |---|---|---|
+| [`tests/brilho.test.js`](../tests/brilho.test.js) | Contorno = duas traves + travessão; caminho sobe a trave esquerda, atravessa o travessão e desce a direita; distâncias fora presas nas pontas; sem trecho fora da passagem; recomeça a cada intervalo; no meio de uma barra o trecho fica só nela, com o comprimento configurado; no canto se divide entre trave e travessão sem perder comprimento; entra pela base da trave esquerda e sai pela base da direita; por padrão só o `tutorial` tem brilho | 9 |
+| [`tests/ondas.test.js`](../tests/ondas.test.js) | Um item por arco; raio sempre entre o inicial e o final; primeiro arco nasce apagado no raio inicial; loop a cada período; arcos igualmente espaçados; acende no começo e apaga no fim do ciclo; por padrão só o `tutorial` tem ondas; cada fase define se tem ondas e a opacidade (limitada entre 0 e 1) | 8 |
+| [`tests/visao.test.js`](../tests/visao.test.js) | `?visao=1` abre com a visão livre e `?visao=0` vendado; sem o parâmetro ou com valor inválido vale o config | 2 |
 | [`tests/mira.test.js`](../tests/mira.test.js) | Ponto mirado na linha do gol, no chão ou à distância padrão; altura limitada; sem alvo mirando para cima; **a bola simulada passo a passo cruza a linha do gol a menos de 2 cm do ponto mirado** (meio, canto alto, rasteiro, travessão, por cima, trave, fora); mirando o chão sai rolando; alvo atrás da bola chuta para a frente | 15 |
 | [`tests/tutorial.test.js`](../tests/tutorial.test.js) | Dicas do tutorial seguem o chute (andar, preparar, mirar, somem no chute); voltam para "andar" ao se afastar; eventos sem dica devolvem null; todo texto tem a versão do computador | 4 |
 | [`tests/kick.test.js`](../tests/kick.test.js) | Direção do chute no chão (normalizada); controle quase vertical usa a cabeça; pode preparar só em fase jogável com a bola esperando e perto; pode chutar só com o chute preparado e as mesmas condições; mão permitida pela configuração | 9 |
@@ -206,7 +212,7 @@ O chute tem duas etapas: preparar (E / grip) e chutar (clique ou espaço / gatil
 |---|---|---|---|---|
 | A-VENDA-01 | T2 | No `vestiario`, apertar o botão da venda | A tela escurece e `blindfold-on` aparece no console | ⏳ |
 | A-VENDA-02 | T2 | Depois da venda | O jogo vai para `entrada-campo` | ⏳ |
-| A-VENDA-03 | T3 | Colocar a venda no Quest | O escuro ocupa toda a visão; o painel de debug continua visível | ⏳ |
+| A-VENDA-03 | T3 | Colocar a venda no Quest com `visaoLivre: false` (ou `?visao=0`) | O escuro ocupa toda a visão; apertar **Y** tira a camada e mostra o painel de debug | ⏳ |
 
 ### 4.3 Entrada em campo e guizo (ter 24/11)
 
@@ -217,6 +223,27 @@ O chute tem duas etapas: preparar (E / grip) e chutar (clique ou espaço / gatil
 | A-GUIZO-02 | T3 | Girar a cabeça com a bola parada | O som muda de lado conforme a cabeça gira | ⏳ |
 | A-GUIZO-03 | T3 | De olhos fechados, apontar para a bola | A pessoa acerta a direção só pelo som | ⏳ |
 | A-GUIZO-04 | T3 | Comparar o volume do guizo com o ambiente | O guizo é ouvido com o estádio tocando | ⏳ |
+
+### 4.4 Ondas da bola e liga/desliga da visão (qui 26/11)
+
+| Código | Tipo | Como fazer | Resultado esperado | Status |
+|---|---|---|---|---|
+| A-ONDA-01 | T2 | Abrir `?debug=1&estado=tutorial` e andar em volta da bola | Arcos `( ● )` dos dois lados da bola, crescendo e sumindo em loop, sempre dos lados na tela | ⏳ |
+| A-ONDA-02 | T2 | No `tutorial`, apertar **V** | A tela fica toda preta e só os arcos aparecem; o console mostra `[debug] visão vendada`. V de novo volta a visão | ⏳ |
+| A-ONDA-03 | T2 | Chutar a bola no `tutorial` | Os arcos acompanham a bola rolando, sem girar junto com ela | ⏳ |
+| A-ONDA-04 | T2 | Apertar **N** até `fase2`, `fase3` e `resultado` | Sem arcos | ⏳ |
+| A-ONDA-05 | T2 | Pôr `CONFIG.ondas.fases.fase2` com `ativa: true` e `opacidade: 0.3` | Arcos fracos na `fase2` | ⏳ |
+| A-ONDA-06 | T2 | Abrir `?debug=1&estado=tutorial&visao=0`; depois abrir sem `?debug=1` e apertar V | Já abre vendado, com o painel mostrando `visao: vendada`; sem debug, V não faz nada | ⏳ |
+| A-ONDA-07 | T3 | No Quest, no `tutorial`, apertar **Y** | Os arcos são legíveis no escuro e Y liga e desliga a visão | ⏳ |
+
+### 4.5 Brilho nas traves (qui 26/11)
+
+| Código | Tipo | Como fazer | Resultado esperado | Status |
+|---|---|---|---|---|
+| A-BRILHO-01 | T2 | Abrir `?debug=1&estado=tutorial` e olhar para o gol | A cada 5 s, um trecho azul sólido (mesma cor das ondas, sem degradê) sobe a trave esquerda, atravessa o travessão e desce a trave direita | ✅ (Claude, headless: subindo a trave esquerda) |
+| A-BRILHO-02 | T2 | No `tutorial`, apertar **V** | O trecho aparece sobre o preto e mostra onde está o gol | ✅ (Claude, headless: no travessão) |
+| A-BRILHO-03 | T2 | Apertar **N** até `fase2`, `fase3` e `resultado` | Sem brilho | ⏳ |
+| A-BRILHO-04 | T3 | No Quest, da marca do pênalti, vendado | O brilho é visível e dá para apontar para o gol | ⏳ |
 
 ---
 

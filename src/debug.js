@@ -9,6 +9,8 @@ export const DEBUG = CONFIG.debug || params.get('debug') === '1';
 
 export const ESTADO_DA_URL = DEBUG ? params.get('estado') : null;
 
+export const VISAO_DA_URL = DEBUG ? params.get('visao') : null;
+
 export function registrarLogDeEventos(sceneEl) {
   for (const nome of TODOS_EVENTOS) {
     sceneEl.addEventListener(nome, (e) => console.log(`[evento] ${nome}`, e.detail ?? {}));

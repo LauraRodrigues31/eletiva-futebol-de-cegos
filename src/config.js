@@ -121,8 +121,37 @@ export const CONFIG = {
     duracaoFaixa: 900,
     duracaoFade: 1200,
     pausaNoEscuro: 800,
-    opacidadeDebug: 0.5,
     visaoLivre: true,
+  },
+
+  ondas: {
+    periodo: 1600,
+    arcos: 3,
+    raioInicial: 0.15,
+    raioFinal: 0.6,
+    abertura: 70,
+    espessura: 0.08,
+    entrada: 0.15,
+    cor: '#7fd8ff',
+    ordem: 1002,
+    fases: {
+      tutorial: { ativa: true, opacidade: 0.9 },
+      fase2: { ativa: false, opacidade: 0.9 },
+      fase3: { ativa: false, opacidade: 0.9 },
+    },
+  },
+
+  brilhoTraves: {
+    intervalo: 5000,
+    duracao: 900,
+    comprimento: 1,
+    raio: 0.06,
+    ordem: 1003,
+    fases: {
+      tutorial: { ativa: true, opacidade: 1 },
+      fase2: { ativa: false, opacidade: 1 },
+      fase3: { ativa: false, opacidade: 1 },
+    },
   },
 
   estadio: {

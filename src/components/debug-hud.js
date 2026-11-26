@@ -46,7 +46,7 @@ AFRAME.registerComponent('debug-hud', {
     this.ultimaMira = 0;
     console.log(
       `[debug] modo debug ligado, versão ${VERSAO}. ` +
-        'N/B avança o estado. Sempre: R/A recoloca a bola; perto da bola, E/grip prepara e clique/espaço/gatilho chuta.'
+        'N/B avança o estado, V/Y liga e desliga a visão. Sempre: R/A recoloca a bola; perto da bola, E/grip prepara e clique/espaço/gatilho chuta.'
     );
   },
 
@@ -81,6 +81,7 @@ AFRAME.registerComponent('debug-hud', {
       `tentativa: ${jogo.tentativaAtual()}`,
       `cabeca x:${this.pos.x.toFixed(2)} z:${this.pos.z.toFixed(2)}`,
       `area: ${area ? area.estado : '-'}`,
+      `visao: ${this.textoVisao()}`,
     ];
     if (bola && bola.ativa) {
       const proximidade =
@@ -98,6 +99,12 @@ AFRAME.registerComponent('debug-hud', {
       linhas.push('bola: inativa');
     }
     this.texto.setAttribute('text', 'value', linhas.join('\n'));
+  },
+
+  textoVisao() {
+    const venda = document.querySelector('#venda-efeito')?.components?.blindfold;
+    if (!venda) return '-';
+    return venda.visaoLivre ? 'livre' : 'vendada';
   },
 
   textoPreparo() {

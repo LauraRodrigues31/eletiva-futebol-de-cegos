@@ -1,9 +1,11 @@
 import './systems/game-state.js';
 import './components/play-area.js';
 import './components/ball.js';
+import './components/ondas-sonoras.js';
 import './components/kicker.js';
 import './components/controles-jogador.js';
 import './components/goal-zones.js';
+import './components/brilho-traves.js';
 import './components/debug-hud.js';
 import './components/painel-texto.js';
 import './components/instrucoes.js';
