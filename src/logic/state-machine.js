@@ -1,5 +1,3 @@
-// Máquina de estados do jogo. Lógica pura, sem A-Frame.
-
 export const ESTADOS = Object.freeze({
   VESTIARIO: 'vestiario',
   ENTRADA_CAMPO: 'entrada-campo',
@@ -10,7 +8,6 @@ export const ESTADOS = Object.freeze({
   RESULTADO: 'resultado',
 });
 
-/** Ordem do jogo. O último volta para o primeiro (reinício). */
 export const SEQUENCIA = Object.freeze([
   ESTADOS.VESTIARIO,
   ESTADOS.ENTRADA_CAMPO,
@@ -21,7 +18,6 @@ export const SEQUENCIA = Object.freeze([
   ESTADOS.RESULTADO,
 ]);
 
-/** Transições permitidas: estado → lista de destinos. */
 export const TRANSICOES = Object.freeze({
   [ESTADOS.VESTIARIO]: [ESTADOS.ENTRADA_CAMPO],
   [ESTADOS.ENTRADA_CAMPO]: [ESTADOS.TUTORIAL],
@@ -32,11 +28,6 @@ export const TRANSICOES = Object.freeze({
   [ESTADOS.RESULTADO]: [ESTADOS.VESTIARIO],
 });
 
-/**
- * Eventos que provocam transição: evento → { estado de origem: destino }.
- * O fim das tentativas (tutorial → fim-tutorial, fase2 → fase3, fase3 → resultado)
- * é decidido pelo ciclo de tentativas (quinta 26/11), não por evento externo.
- */
 export const GATILHOS = Object.freeze({
   'blindfold-on': { [ESTADOS.VESTIARIO]: ESTADOS.ENTRADA_CAMPO },
   'field-entered': { [ESTADOS.ENTRADA_CAMPO]: ESTADOS.TUTORIAL },
@@ -46,7 +37,6 @@ export const GATILHOS = Object.freeze({
   },
 });
 
-/** Estados em que a pessoa joga (tem bola e tentativas). */
 export const FASES_JOGAVEIS = Object.freeze([ESTADOS.TUTORIAL, ESTADOS.FASE2, ESTADOS.FASE3]);
 
 export function estadoValido(nome) {
@@ -65,29 +55,19 @@ export function podeIr(de, para) {
   return (TRANSICOES[de] ?? []).includes(para);
 }
 
-/** Dados ao entrar em um estado: tentativa 1 nas fases jogáveis, 0 nas outras. */
 export function entrarEm(estado) {
   return { estado, tentativa: ehFaseJogavel(estado) ? 1 : 0 };
 }
 
-/**
- * Tenta ir de `dados.estado` para `para`.
- * Devolve { ok: true, dados: novosDados } ou { ok: false, dados } (sem mudança).
- */
 export function transicionar(dados, para) {
   if (!podeIr(dados.estado, para)) return { ok: false, dados };
   return { ok: true, dados: entrarEm(para) };
 }
 
-/** Destino que um evento provoca a partir do estado atual, ou null se o evento não vale agora. */
 export function destinoPorEvento(estado, evento) {
   return GATILHOS[evento]?.[estado] ?? null;
 }
 
-/**
- * Monta o `detail` do evento state-change.
- * `from` é o estado anterior (null na primeira emissão); `dados` é o novo estado.
- */
 export function detalheStateChange(from, dados) {
   return {
     from,
@@ -97,7 +77,6 @@ export function detalheStateChange(from, dados) {
   };
 }
 
-/** Próximo estado na sequência (usado pelo modo debug para avançar). */
 export function proximoNaSequencia(estado) {
   const i = SEQUENCIA.indexOf(estado);
   if (i === -1) return null;

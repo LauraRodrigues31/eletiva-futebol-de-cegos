@@ -16,8 +16,8 @@ export function limitesCampo(config) {
 }
 
 export function larguraAreaGoleiro(config) {
-  const { trave, areaGoleiro } = config.estadio;
-  return arredondar(config.gol.largura + 2 * trave.espessura + 2 * areaGoleiro.alemDaTrave);
+  const { largura, raioTrave } = config.gol;
+  return arredondar(largura + 4 * raioTrave + 2 * config.estadio.areaGoleiro.alemDaTrave);
 }
 
 export function linhasDeFundo(config) {

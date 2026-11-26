@@ -1,31 +1,22 @@
-// Bola: forma, posição, proximidade com a cabeça, física do chute e resultado (gol, trave, fora).
-// Uso: <a-entity id="bola" ball></a-entity>
-// Não mexe em som: a Anna coloca o guizo (sound posicional) nesta mesma entidade.
-//
-// Estados da bola:
-//   esperando → (kick) → rolando → (goal/miss) → decidida → (parou) → parada
-//   rolando → (parou ou saiu do campo sem chegar ao gol: miss) → parada
-//   qualquer um → recolocar() → esperando
-//
-// Ordem dos eventos em cada chute: kick → (post-hit)? → goal | miss → ball-stopped
 import { CONFIG } from '../config.js';
 import { EVENTS } from '../events.js';
 import { ehFaseJogavel } from '../logic/state-machine.js';
 import { distanciaNoChao, atualizarProximidade } from '../logic/proximity.js';
-import { passoFisica } from '../logic/physics.js';
+import { passoBola, rebaterNasBandas, noAr } from '../logic/physics.js';
 import {
-  classificarCruzamento,
-  cruzamentoDaLinha,
+  classificarNoGol,
+  pontoDeCruzamento,
   rebaterNaTrave,
+  rebaterNoTravessao,
   limitesDoCampo,
   foraDoCampo,
 } from '../logic/goal.js';
-import { posicaoGol } from '../logic/area.js';
+import { posicaoGol, posicaoMarcaPenalti } from '../logic/area.js';
 import { posicaoCabeca } from '../head.js';
 
 const EIXO = new THREE.Vector3();
 const GIRO = new THREE.Quaternion();
-const arredondar = (n) => Math.round(n * 1000) / 1000; // milímetros bastam
+const arredondar = (n) => Math.round(n * 1000) / 1000;
 
 AFRAME.registerComponent('ball', {
   init() {
@@ -36,10 +27,10 @@ AFRAME.registerComponent('ball', {
     this.estadoProximidade = 'longe';
     this.distancia = Infinity;
     this.momentoSpawn = 0;
-    this.posicaoSaida = { ...CONFIG.bola.posicaoTutorial };
-    this.vel = { x: 0, z: 0 };
+    this.posicaoSaida = posicaoMarcaPenalti(CONFIG);
+    this.vel = { x: 0, y: 0, z: 0 };
     this.tempoRolando = 0;
-    this.ultimoResultado = null; // 'gol' | 'miss (fora)' ... (para o painel de debug)
+    this.ultimoResultado = null;
     this.acumuladoProximidade = 0;
     this.gol = posicaoGol(CONFIG);
 
@@ -50,7 +41,7 @@ AFRAME.registerComponent('ball', {
       segmentsHeight: 16,
     });
     this.el.setAttribute('material', { color: '#f5c518', roughness: 0.6 });
-    this.criarFaixas(); // faixa escura para o giro ficar visível
+    this.criarFaixas();
     this.el.setAttribute('visible', false);
 
     this.aoMudarEstado = (e) => this.reagirAoEstado(e.detail.to);
@@ -76,14 +67,11 @@ AFRAME.registerComponent('ball', {
     this.el.appendChild(faixa);
   },
 
-  // A bola só está em jogo nas fases jogáveis (tutorial, fase2, fase3).
   reagirAoEstado(estado) {
     if (ehFaseJogavel(estado)) {
       this.ativa = true;
       this.el.setAttribute('visible', true);
-      // Por enquanto todas as fases usam a posição do tutorial.
-      // Sorteio da fase 2: 30/11. Movimento da fase 3: 01/12.
-      this.posicaoSaida = { ...CONFIG.bola.posicaoTutorial };
+      this.posicaoSaida = posicaoMarcaPenalti(CONFIG);
       this.colocarEm(this.posicaoSaida);
     } else {
       this.ativa = false;
@@ -91,14 +79,13 @@ AFRAME.registerComponent('ball', {
       this.estadoBola = 'esperando';
       this.estadoProximidade = 'longe';
       this.distancia = Infinity;
-      this.vel = { x: 0, z: 0 };
+      this.vel = { x: 0, y: 0, z: 0 };
     }
   },
 
-  /** Coloca a bola parada no chão em (x, z), pronta para ser chutada, e emite ball-spawned. */
   colocarEm({ x, z }) {
     this.el.object3D.position.set(x, CONFIG.bola.raio, z);
-    this.vel = { x: 0, z: 0 };
+    this.vel = { x: 0, y: 0, z: 0 };
     this.estadoBola = 'esperando';
     this.estadoProximidade = 'longe';
     this.distancia = Infinity;
@@ -107,24 +94,26 @@ AFRAME.registerComponent('ball', {
     this.cena.emit(EVENTS.BALL_SPAWNED, { position: { x, y: CONFIG.bola.raio, z } });
   },
 
-  /** Volta a bola para o lugar de saída (modo debug agora; ciclo de tentativas na quinta). */
   recolocar() {
     if (!this.ativa) return;
     this.ultimoResultado = null;
     this.colocarEm(this.posicaoSaida);
   },
 
-  /** Velocidade atual em m/s (para o painel de debug). */
   velocidade() {
-    return Math.hypot(this.vel.x, this.vel.z);
+    return Math.hypot(this.vel.x, this.vel.y, this.vel.z);
   },
 
-  // O kicker já validou o chute; aqui só conferimos de novo o estado da bola.
-  iniciarRolagem({ direction, power }) {
+  iniciarRolagem({ direction, power, velocity }) {
     if (!this.ativa || this.estadoBola !== 'esperando') return;
-    const v = CONFIG.chute.velocidade * (power ?? 1);
-    this.vel = { x: direction.x * v, z: direction.z * v };
+    if (velocity) {
+      this.vel = { x: velocity.x, y: velocity.y ?? 0, z: velocity.z };
+    } else {
+      const v = CONFIG.chute.velocidade * (power ?? 1);
+      this.vel = { x: direction.x * v, y: 0, z: direction.z * v };
+    }
     this.tempoRolando = 0;
+    this.saiuDoCampo = false;
     this.ultimoResultado = null;
     this.estadoBola = 'rolando';
   },
@@ -160,59 +149,72 @@ AFRAME.registerComponent('ball', {
     }
   },
 
+  parada(pos) {
+    return !noAr(pos, this.vel, CONFIG) && Math.hypot(this.vel.x, this.vel.z) <= CONFIG.fisica.velocidadeParada;
+  },
+
   passoDaRolagem(dt) {
     const p = this.el.object3D.position;
-    const anterior = { x: p.x, z: p.z };
-    const r = passoFisica(anterior, this.vel, dt, CONFIG);
+    const anterior = { x: p.x, y: p.y, z: p.z };
+    const r = passoBola(anterior, this.vel, dt, CONFIG);
     let pos = r.pos;
     let parou = r.parou;
     this.vel = r.vel;
     this.tempoRolando += Math.min(dt, CONFIG.fisica.dtMaximo);
 
-    // 1. Chegou na linha do gol?
     if (this.estadoBola === 'rolando') {
-      const x = cruzamentoDaLinha(anterior, pos, this.gol.z);
-      if (x !== null) {
-        const tipo = classificarCruzamento(x - this.gol.x, CONFIG);
-        const naLinha = { x: arredondar(x), y: CONFIG.bola.raio, z: this.gol.z };
+      const c = pontoDeCruzamento(anterior, pos, this.gol.z);
+      if (c !== null) {
+        const tipo = classificarNoGol({ x: c.x - this.gol.x, y: c.y }, CONFIG);
+        const naLinha = { x: arredondar(c.x), y: arredondar(c.y), z: this.gol.z };
         if (tipo === 'gol') {
           this.decidir('gol', () => this.cena.emit(EVENTS.GOAL, { position: naLinha }));
-        } else if (tipo === 'fora') {
-          this.decidir('miss (fora)', () => this.cena.emit(EVENTS.MISS, { reason: 'fora' }));
+        } else if (tipo === 'fora' || tipo === 'alto') {
+          this.decidir(`miss (${tipo})`, () => this.cena.emit(EVENTS.MISS, { reason: tipo }));
         } else {
-          // Trave: volta para a frente da linha e quica para trás.
-          const side = tipo === 'trave-esquerda' ? 'left' : 'right';
-          pos = { x, z: this.gol.z + 0.001 };
-          this.vel = rebaterNaTrave(r.parou ? { x: 0, z: 0 } : this.vel, CONFIG);
-          parou = Math.hypot(this.vel.x, this.vel.z) <= CONFIG.fisica.velocidadeParada;
+          const side = { 'trave-esquerda': 'left', 'trave-direita': 'right', travessao: 'top' }[tipo];
+          pos = { x: c.x, y: Math.max(c.y, CONFIG.bola.raio), z: this.gol.z + 0.001 };
+          const antes = r.parou ? { x: 0, y: 0, z: 0 } : this.vel;
+          this.vel = tipo === 'travessao' ? rebaterNoTravessao(antes, CONFIG) : rebaterNaTrave(antes, CONFIG);
+          parou = this.parada(pos);
           this.cena.emit(EVENTS.POST_HIT, { side, position: naLinha });
           this.decidir('miss (trave)', () => this.cena.emit(EVENTS.MISS, { reason: 'trave' }));
         }
       }
     }
 
-    // 2. Saiu do campo? Para no limite.
-    let saiu = false;
+    const banda = rebaterNasBandas(pos, this.vel, CONFIG);
+    if (banda.bateu) {
+      pos = banda.pos;
+      this.vel = banda.vel;
+      parou = parou || this.parada(pos);
+    }
+
     if (foraDoCampo(pos, CONFIG)) {
       const l = limitesDoCampo(CONFIG);
       pos = {
         x: Math.min(Math.max(pos.x, l.minX), l.maxX),
+        y: pos.y,
         z: Math.min(Math.max(pos.z, l.minZ), l.maxZ),
       };
-      saiu = true;
+      this.vel = { x: 0, y: this.vel.y, z: 0 };
+      this.saiuDoCampo = true;
+      parou = this.parada(pos);
+    }
+
+    if (this.tempoRolando >= CONFIG.fisica.tempoMaximo) {
+      pos = { ...pos, y: CONFIG.bola.raio };
       parou = true;
     }
 
-    // 3. Passou do tempo máximo?
-    if (this.tempoRolando >= CONFIG.fisica.tempoMaximo) parou = true;
-
     this.girar(anterior, pos);
-    p.set(pos.x, CONFIG.bola.raio, pos.z);
+    p.set(pos.x, pos.y, pos.z);
 
     if (parou) {
-      this.vel = { x: 0, z: 0 };
+      this.vel = { x: 0, y: 0, z: 0 };
+      p.y = CONFIG.bola.raio;
       if (this.estadoBola === 'rolando') {
-        const reason = saiu ? 'saiu' : 'curta';
+        const reason = this.saiuDoCampo ? 'saiu' : 'curta';
         this.decidir(`miss (${reason})`, () => this.cena.emit(EVENTS.MISS, { reason }));
       }
       this.estadoBola = 'parada';
@@ -222,7 +224,6 @@ AFRAME.registerComponent('ball', {
     }
   },
 
-  // Garante um único resultado por chute.
   decidir(rotulo, emitir) {
     if (this.estadoBola !== 'rolando') return;
     this.estadoBola = 'decidida';
@@ -230,7 +231,6 @@ AFRAME.registerComponent('ball', {
     emitir();
   },
 
-  // Giro visual: rola em torno do eixo perpendicular ao movimento.
   girar(de, para) {
     const dx = para.x - de.x;
     const dz = para.z - de.z;

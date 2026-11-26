@@ -98,7 +98,7 @@ test('goleiro da frente fica na área do goleiro, mas fora do vão do gol', () =
   const c = limitesCampo(CONFIG);
   const goleiro = posicoesPessoas(CONFIG).find((p) => p.papel === 'goleiro' && Math.abs(p.z - c.minZ) < 3);
   assert.ok(goleiro);
-  assert.ok(Math.abs(goleiro.x) > CONFIG.gol.largura / 2 + CONFIG.estadio.trave.espessura);
+  assert.ok(Math.abs(goleiro.x) > CONFIG.gol.largura / 2 + 2 * CONFIG.gol.raioTrave);
   assert.ok(Math.abs(goleiro.x) <= larguraAreaGoleiro(CONFIG) / 2);
   assert.ok(goleiro.z > c.minZ && goleiro.z <= c.minZ + CONFIG.estadio.areaGoleiro.profundidade);
 });

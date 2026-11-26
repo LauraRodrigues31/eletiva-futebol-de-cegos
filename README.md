@@ -11,8 +11,8 @@ Projeto da eletiva **Experiências Imersivas**.
 
 - **Link (Quest 3):** https://laurarodrigues31.github.io/eletiva-futebol-de-cegos/
 - **Modo debug:** adicione `?debug=1` ao link. Aparece um painel com o estado do jogo, e o botão **B** do controle direito (ou a tecla **N** no computador) avança os estados. `?debug=1&estado=fase2` abre direto em uma fase.
-- **No computador:** rode `npx serve .` na pasta do projeto e abra o endereço mostrado com `?debug=1`. Clique e arraste para olhar em volta, use **WASD** para andar e a **barra de espaço** para chutar.
-- **Chute:** perto da bola, aponte o controle para o gol e aperte o **gatilho** (qualquer mão). No modo debug, o botão **A** (ou a tecla **R**) recoloca a bola.
+- **No computador:** rode `npx serve .` na pasta do projeto e abra o endereço mostrado com `?debug=1`. O primeiro clique trava e esconde o mouse; depois disso, mover o mouse vira a cabeça (**Esc** solta). Use **WASD** para andar e segure **Shift** para andar devagar ao chegar perto da bola. No vestiário, ponha a mira do centro da tela na venda e clique. Ao entrar em campo, a câmera volta para o centro da área, de frente para o gol. Perto da bola, aperte **E** para preparar o chute. Aparece uma mira amarela no centro da tela: a bola vai exatamente onde ela aponta, inclusive na altura (rasteiro, no ângulo, por cima). Chute com o **clique esquerdo** (ou a **barra de espaço**). No tutorial, um balão na tela diz o próximo passo.
+- **Chute no Quest:** entre no raio da bola, aperte o **grip** (botão lateral, o controle vibra fraco), aponte o controle para onde quer chutar (a altura também conta) e aperte o **gatilho** (qualquer mão). No Quest não aparece mira na tela. O botão **A** (ou a tecla **R**) recoloca a bola na marca do pênalti, com ou sem debug.
 - **Testes automáticos:** `node --test` (ou `npm test`).
 - **Antes de entrar no VR:** fique em pé sobre a marca no centro da área livre (3 × 3 m), olhando para onde o gol deve ficar, com o Guardian configurado e alguém acompanhando.
 

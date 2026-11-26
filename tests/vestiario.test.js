@@ -44,6 +44,17 @@ test('a venda do jogador fica dentro da área física (dá para alcançar andand
   assert.ok(dentroDaArea(cabineDoJogador(CONFIG).posVenda, CONFIG));
 });
 
+test('a venda do jogador fica à frente da marca, ao alcance sem sair dela', () => {
+  const { posVenda } = cabineDoJogador(CONFIG);
+  assert.equal(posVenda.x, 0);
+  assert.ok(posVenda.z < 0);
+  assert.ok(Math.hypot(posVenda.x, posVenda.z) < CONFIG.vestiario.alcance.entrar);
+});
+
+test('o jogador continua com a camisa 9', () => {
+  assert.equal(cabineDoJogador(CONFIG).numero, 9);
+});
+
 test('números das camisas vêm da configuração', () => {
   assert.deepEqual(
     layoutCabines(CONFIG).map((c) => c.numero),

@@ -27,6 +27,19 @@ const MAOS = [
   { seletor: '#mao-direita', lado: 'right' },
 ];
 
+const DISTANCIA_MIRA = 0.5;
+
+function criarMira() {
+  const mira = new THREE.Mesh(
+    new THREE.RingGeometry(0.005, 0.009, 24),
+    new THREE.MeshBasicMaterial({ color: '#ffffff', transparent: true, opacity: 0.9, depthTest: false }),
+  );
+  mira.position.z = -DISTANCIA_MIRA;
+  mira.renderOrder = 1004;
+  mira.visible = false;
+  return mira;
+}
+
 export function criarMalhaVenda(cor) {
   const material = new THREE.MeshLambertMaterial({ color: cor });
   const grupo = new THREE.Group();
@@ -46,6 +59,9 @@ AFRAME.registerComponent('vestiario', {
     this.ativo = false;
     this.raios = { ...RAIO_PADRAO };
     this.cabines = layoutCabines(CONFIG);
+    this.cameraEl = document.querySelector('#camera');
+    this.mira = criarMira();
+    this.cameraEl.object3D.add(this.mira);
 
     this.materiais = this.criarMateriais();
     this.decor = new THREE.Group();
@@ -73,8 +89,14 @@ AFRAME.registerComponent('vestiario', {
       this.marcador.visible = false;
       setTimeout(() => this.desligarApontadores(), 0);
     };
-    this.aoEntrarVR = () => this.ativo && this.ligarMaos();
-    this.aoSairVR = () => this.desligarMaos();
+    this.aoEntrarVR = () => {
+      this.desligarMira();
+      if (this.ativo) this.ligarMaos();
+    };
+    this.aoSairVR = () => {
+      this.desligarMaos();
+      if (this.ativo) this.ligarMira();
+    };
     this.cena.addEventListener(EVENTS.STATE_CHANGE, this.aoMudarEstado);
     this.el.addEventListener('venda-pegando', this.aoPegarVenda);
     this.cena.addEventListener('enter-vr', this.aoEntrarVR);
@@ -87,6 +109,7 @@ AFRAME.registerComponent('vestiario', {
     this.cena.removeEventListener('enter-vr', this.aoEntrarVR);
     this.cena.removeEventListener('exit-vr', this.aoSairVR);
     this.desligarApontadores();
+    this.cameraEl.object3D.remove(this.mira);
     this.el.removeObject3D('decor');
   },
 
@@ -94,7 +117,7 @@ AFRAME.registerComponent('vestiario', {
     const entrou = estado === ESTADOS.VESTIARIO;
     this.ativo = entrou;
     this.el.setAttribute('visible', entrou);
-    for (const id of ['#campo', '#gol', '#area']) {
+    for (const id of ['#gol', '#area']) {
       document.querySelector(id)?.setAttribute('visible', !entrou);
     }
 
@@ -120,9 +143,20 @@ AFRAME.registerComponent('vestiario', {
   },
 
   ligarApontadores() {
-    this.cena.setAttribute('raycaster', { objects: '.clicavel', far: 30 });
-    this.cena.setAttribute('cursor', { rayOrigin: 'mouse', fuse: false });
     if (this.cena.is('vr-mode')) this.ligarMaos();
+    else this.ligarMira();
+  },
+
+  ligarMira() {
+    this.cameraEl.setAttribute('raycaster', { objects: '.clicavel', far: 30 });
+    this.cameraEl.setAttribute('cursor', { rayOrigin: 'entity', fuse: false });
+    this.mira.visible = true;
+  },
+
+  desligarMira() {
+    this.cameraEl.removeAttribute('cursor');
+    this.cameraEl.removeAttribute('raycaster');
+    this.mira.visible = false;
   },
 
   ligarMaos() {
@@ -159,8 +193,7 @@ AFRAME.registerComponent('vestiario', {
   },
 
   desligarApontadores() {
-    this.cena.removeAttribute('cursor');
-    this.cena.removeAttribute('raycaster');
+    this.desligarMira();
     this.desligarMaos();
   },
 

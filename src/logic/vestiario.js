@@ -64,7 +64,7 @@ export function atualizarAlcanceVenda(estadoAtual, distancia, config) {
 
 export const INSTRUCOES = Object.freeze({
   ir: 'Este é o vestiário.\nVá até a sua venda, marcada pela luz amarela.',
-  clicar: 'Aponte para a venda e aperte o gatilho.\n(No computador: clique nela.)',
+  clicar: 'Aponte para a venda e aperte o gatilho.\n(No computador: ponha a mira nela e clique.)',
   longe: 'Chegue mais perto da venda para pegá-la.',
   colocando: 'Colocando a venda…',
 });

@@ -5,9 +5,10 @@ import { Animador } from '../logic/animador.js';
 
 const TEXTO = 'Entrada em campo\n(cena em construção)\n\nVisão liberada para teste.';
 const DICA_DEBUG = '\n\nDebug: tecla N ou botão B avança.';
-const TEMPO_NA_TELA = 5000;
+const TEMPO_NA_TELA = 1200;
+const DURACAO_FADE = 400;
 
-AFRAME.registerComponent('cena-provisoria', {
+AFRAME.registerComponent('entrada-campo', {
   init() {
     this.cena = this.el.sceneEl;
     this.animador = new Animador();
@@ -30,15 +31,15 @@ AFRAME.registerComponent('cena-provisoria', {
 
     this.aoMudarEstado = (e) => {
       if (e.detail.to === ESTADOS.ENTRADA_CAMPO) this.mostrarPorUmTempo();
-      else this.fadePara(0, 200);
+      else this.fadePara(0, DURACAO_FADE);
     };
     this.cena.addEventListener(EVENTS.STATE_CHANGE, this.aoMudarEstado);
   },
 
   async mostrarPorUmTempo() {
-    if (!(await this.fadePara(1, 1000))) return;
+    if (!(await this.fadePara(1, DURACAO_FADE))) return;
     if (!(await this.animador.esperar(TEMPO_NA_TELA))) return;
-    this.fadePara(0, 1000);
+    this.cena.emit(EVENTS.FIELD_ENTERED);
   },
 
   fadePara(alvo, duracao) {

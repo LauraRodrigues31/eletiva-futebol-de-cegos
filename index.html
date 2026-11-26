@@ -5,7 +5,6 @@
     <title>Futebol de Cegos: Peneira</title>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link rel="icon" href="data:," />
-    <!-- A-Frame com versão fixada. -->
     <script src="https://aframe.io/releases/1.8.0/aframe.min.js"></script>
     <script type="module" src="./src/main.js"></script>
   </head>
@@ -15,15 +14,12 @@
       renderer="colorManagement: true"
       background="color: #1a1d22"
     >
-      <!-- ===================== LAURA: jogador ===================== -->
-      <!-- Origem (0,0,0) = marca no chão, no centro da área. O gol fica em -z. -->
-      <!-- kicker: gatilho dos controles e barra de espaço chutam a bola. -->
-      <a-entity id="rig" position="0 0 0" kicker>
+      <a-entity id="rig" position="0 0 0" kicker controles-jogador>
         <a-entity
           id="camera"
           camera
-          look-controls
-          wasd-controls="acceleration: 20"
+          look-controls="pointerLockEnabled: true"
+          wasd-controls="acceleration: 16"
           position="0 1.6 0"
           debug-hud
         ></a-entity>
@@ -31,8 +27,7 @@
         <a-entity id="mao-direita" meta-touch-controls="hand: right"></a-entity>
       </a-entity>
 
-      <a-entity id="campo" field-placeholder="parte: campo"></a-entity>
-      <a-entity id="gol" field-placeholder="parte: gol" goal-zones></a-entity>
+      <a-entity id="gol" goal-zones></a-entity>
 
       <a-entity id="estadio" estadio></a-entity>
 
@@ -42,11 +37,11 @@
 
       <a-entity id="vestiario" vestiario></a-entity>
 
-      <a-entity id="instrucoes" instrucoes></a-entity>
+      <a-entity id="instrucoes" instrucoes dicas-tutorial></a-entity>
 
       <a-entity id="venda-efeito" blindfold></a-entity>
 
-      <a-entity id="entrada-campo" cena-provisoria></a-entity>
+      <a-entity id="entrada-campo" entrada-campo></a-entity>
 
       <a-entity id="colisao" colisao></a-entity>
 

@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { direcaoHorizontal, podeChutar, maoPermitida } from '../src/logic/kick.js';
+import { direcaoHorizontal, podePreparar, podeChutar, maoPermitida } from '../src/logic/kick.js';
 
 const quase = (a, b, tol = 1e-9) => assert.ok(Math.abs(a - b) <= tol, `${a} ≈ ${b}`);
 
@@ -22,17 +22,35 @@ test('sem reserva e vetor vertical, chuta reto para o gol (-z)', () => {
   assert.deepEqual(direcaoHorizontal({ x: 0, y: 1, z: 0 }, 0.3), { x: 0, y: 0, z: -1 });
 });
 
-test('pode chutar: fase jogável, bola esperando e perto', () => {
-  assert.deepEqual(podeChutar('tutorial', 'esperando', 'perto'), { ok: true });
-  assert.deepEqual(podeChutar('fase3', 'esperando', 'perto'), { ok: true });
+test('pode preparar: fase jogável, bola esperando e perto', () => {
+  assert.deepEqual(podePreparar('tutorial', 'esperando', 'perto'), { ok: true });
+  assert.deepEqual(podePreparar('fase3', 'esperando', 'perto'), { ok: true });
 });
 
-test('não pode chutar: fora de fase, bola longe ou já chutada', () => {
-  assert.equal(podeChutar('vestiario', 'esperando', 'perto').ok, false);
-  assert.equal(podeChutar('fim-tutorial', 'esperando', 'perto').ok, false);
-  assert.deepEqual(podeChutar('tutorial', 'esperando', 'longe'), { ok: false, motivo: 'bola longe' });
-  assert.deepEqual(podeChutar('tutorial', 'rolando', 'perto'), { ok: false, motivo: 'bola rolando' });
-  assert.equal(podeChutar('tutorial', 'parada', 'perto').ok, false);
+test('não pode preparar: fora de fase, bola longe ou já chutada', () => {
+  assert.equal(podePreparar('vestiario', 'esperando', 'perto').ok, false);
+  assert.equal(podePreparar('fim-tutorial', 'esperando', 'perto').ok, false);
+  assert.deepEqual(podePreparar('tutorial', 'esperando', 'longe'), { ok: false, motivo: 'bola longe' });
+  assert.deepEqual(podePreparar('tutorial', 'rolando', 'perto'), { ok: false, motivo: 'bola rolando' });
+  assert.equal(podePreparar('tutorial', 'parada', 'perto').ok, false);
+});
+
+test('pode chutar: tudo que o preparo pede e o chute preparado', () => {
+  assert.deepEqual(podeChutar('tutorial', 'esperando', 'perto', true), { ok: true });
+  assert.deepEqual(podeChutar('fase2', 'esperando', 'perto', true), { ok: true });
+});
+
+test('não pode chutar sem preparar, mesmo perto da bola', () => {
+  assert.deepEqual(podeChutar('tutorial', 'esperando', 'perto', false), {
+    ok: false,
+    motivo: 'chute não preparado',
+  });
+});
+
+test('chute preparado não vale se a bola ficou longe, rolou ou a fase acabou', () => {
+  assert.deepEqual(podeChutar('tutorial', 'esperando', 'longe', true), { ok: false, motivo: 'bola longe' });
+  assert.deepEqual(podeChutar('tutorial', 'rolando', 'perto', true), { ok: false, motivo: 'bola rolando' });
+  assert.equal(podeChutar('fim-tutorial', 'esperando', 'perto', true).ok, false);
 });
 
 test('mão permitida conforme a configuração', () => {

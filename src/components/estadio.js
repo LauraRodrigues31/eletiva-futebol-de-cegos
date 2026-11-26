@@ -133,11 +133,8 @@ AFRAME.registerComponent('estadio', {
         faixa: linhas.faixaGrama,
         cores,
       }),
-      polygonOffset: true,
-      polygonOffsetFactor: 0,
-      polygonOffsetUnits: -4,
     });
-    this.plano(this.decor, material, [c.maxX - c.minX, c.maxZ - c.minZ], [0, 0.001, c.centroZ], [-Math.PI / 2]);
+    this.plano(this.decor, material, [c.maxX - c.minX, c.maxZ - c.minZ], [0, 0, c.centroZ], [-Math.PI / 2]);
   },
 
   montarBandas() {
@@ -188,24 +185,20 @@ AFRAME.registerComponent('estadio', {
   },
 
   montarGols() {
-    const { largura, altura } = CONFIG.gol;
-    const { rede, trave, cores } = CONFIG.estadio;
+    const { largura, altura, raioTrave, profundidadeRede: p } = CONFIG.gol;
     const malha = this.materialRede(CELULA_REDE);
-    const branco = this.material(cores.trave);
+    const branco = this.material(CONFIG.estadio.cores.trave);
     const meio = Math.PI / 2;
-    const p = rede.profundidade;
 
     for (const { z: linha, sentido } of linhasDeFundo(CONFIG)) {
       const g = new THREE.Group();
       g.position.set(0, 0, linha);
       const fora = -sentido;
 
-      if (sentido < 0) {
-        for (const lado of [-1, 1]) {
-          this.cilindro(g, branco, trave.espessura / 2, altura, [(lado * largura) / 2, altura / 2, 0]);
-        }
-        this.cilindro(g, branco, trave.espessura / 2, largura + trave.espessura, [0, altura, 0], [0, 0, meio]);
+      for (const lado of [-1, 1]) {
+        this.cilindro(g, branco, raioTrave, altura, [(lado * largura) / 2, altura / 2, 0]);
       }
+      this.cilindro(g, branco, raioTrave, largura + raioTrave * 2, [0, altura, 0], [0, 0, meio]);
 
       this.planoRede(g, malha, [largura, altura], [0, altura / 2, fora * p]);
       this.planoRede(g, malha, [largura, p], [0, altura, (fora * p) / 2], [meio]);

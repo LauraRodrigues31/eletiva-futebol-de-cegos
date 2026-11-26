@@ -1,24 +1,11 @@
-// Zonas de gol e de trave. Lógica pura.
-//
-//          trave esq.                          trave dir.
-//   fora   |<-0,15 m->|       gol (3,66 m)      |<-0,15 m->|  fora
-// ---------+---------+---------------------------+---------+---------  linha do gol
-//        -1,65     -1,35                        1,35      1,65    (x, valores padrão)
-import { posicaoGol, limitesArea } from './area.js';
+import { posicaoGol, limitesAreaVirtual } from './area.js';
 
-/** Limites em x (a partir do centro do gol) usados para classificar o cruzamento. */
 export function limitesDoGol(config) {
   const meia = config.gol.largura / 2;
   const folga = config.gol.raioTrave + config.bola.raio;
   return { limiteGol: meia - folga, limiteTrave: meia + folga };
 }
 
-/**
- * Classifica onde a bola cruzou a linha do gol.
- * `x` é a posição da bola no cruzamento, relativa ao centro do gol.
- * Devolve 'gol', 'trave-esquerda', 'trave-direita' ou 'fora'.
- * Esquerda/direita do ponto de vista de quem chuta (olhando para -z): esquerda = x negativo.
- */
 export function classificarCruzamento(x, config) {
   const { limiteGol, limiteTrave } = limitesDoGol(config);
   const distancia = Math.abs(x);
@@ -27,27 +14,42 @@ export function classificarCruzamento(x, config) {
   return 'fora';
 }
 
-/**
- * Se a bola cruzou a linha z = zLinha indo em direção ao gol (z diminuindo)
- * entre `anterior` e `atual`, devolve o x do cruzamento (interpolado). Senão, null.
- */
 export function cruzamentoDaLinha(anterior, atual, zLinha) {
   if (!(anterior.z >= zLinha && atual.z < zLinha)) return null;
   const t = (anterior.z - zLinha) / (anterior.z - atual.z);
   return anterior.x + (atual.x - anterior.x) * t;
 }
 
-/** Velocidade depois de bater na trave: inverte z e perde parte da velocidade. */
-export function rebaterNaTrave(vel, config) {
-  const e = config.fisica.restituicaoTrave;
-  return { x: vel.x * e, z: -vel.z * e };
+export function classificarNoGol({ x, y }, config) {
+  const lateral = classificarCruzamento(x, config);
+  if (lateral === 'fora') return 'fora';
+  const folga = config.gol.raioTrave + config.bola.raio;
+  const travessao = config.gol.altura;
+  if (y > travessao + folga) return 'alto';
+  if (y >= travessao - folga) return 'travessao';
+  return lateral;
 }
 
-/**
- * Limites do campo para a bola, em coordenadas do mundo.
- * Atrás do gol, a bola vai até o fundo da rede; para os lados, até a lateral;
- * para trás do jogador, até o fim do campo.
- */
+export function pontoDeCruzamento(anterior, atual, zLinha) {
+  if (!(anterior.z >= zLinha && atual.z < zLinha)) return null;
+  const t = (anterior.z - zLinha) / (anterior.z - atual.z);
+  const y0 = anterior.y ?? 0;
+  const y1 = atual.y ?? 0;
+  return { x: anterior.x + (atual.x - anterior.x) * t, y: y0 + (y1 - y0) * t };
+}
+
+export function rebaterNaTrave(vel, config) {
+  const e = config.fisica.restituicaoTrave;
+  const r = { x: vel.x * e, z: -vel.z * e };
+  if (vel.y !== undefined) r.y = vel.y * e;
+  return r;
+}
+
+export function rebaterNoTravessao(vel, config) {
+  const e = config.fisica.restituicaoTrave;
+  return { x: vel.x * e, y: -(vel.y ?? 0) * e, z: -vel.z * e };
+}
+
 export function limitesDoCampo(config) {
   const zGol = posicaoGol(config).z;
   const meiaLargura = config.campo.largura / 2;
@@ -55,11 +57,10 @@ export function limitesDoCampo(config) {
     minX: -meiaLargura,
     maxX: meiaLargura,
     minZ: zGol - config.gol.profundidadeRede,
-    maxZ: Math.max(zGol + config.campo.comprimento, limitesArea(config).maxZ),
+    maxZ: Math.max(zGol + config.campo.comprimento, limitesAreaVirtual(config).maxZ),
   };
 }
 
-/** Diz se a posição está fora dos limites do campo. */
 export function foraDoCampo(pos, config) {
   const { minX, maxX, minZ, maxZ } = limitesDoCampo(config);
   return pos.x < minX || pos.x > maxX || pos.z < minZ || pos.z > maxZ;
