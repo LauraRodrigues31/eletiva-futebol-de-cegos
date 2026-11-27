@@ -46,7 +46,7 @@ AFRAME.registerComponent('debug-hud', {
     this.ultimaMira = 0;
     console.log(
       `[debug] modo debug ligado, versão ${VERSAO}. ` +
-        'N/B avança o estado, V/Y liga e desliga a visão. Sempre: R/A recoloca a bola; perto da bola, E/grip prepara e clique/espaço/gatilho chuta.'
+        'N/B avança o estado, V/Y liga e desliga a visão. Sempre: R/A recoloca a bola (na pausa, pula para a próxima tentativa); perto da bola, E/grip prepara e clique/espaço/gatilho chuta.'
     );
   },
 
@@ -78,7 +78,8 @@ AFRAME.registerComponent('debug-hud', {
 
     const linhas = [
       `v${VERSAO}  estado: ${jogo.estadoAtual()}`,
-      `tentativa: ${jogo.tentativaAtual()}`,
+      `tentativa: ${this.textoTentativa()}`,
+      `placar: ${this.textoPlacar()}`,
       `cabeca x:${this.pos.x.toFixed(2)} z:${this.pos.z.toFixed(2)}`,
       `area: ${area ? area.estado : '-'}`,
       `visao: ${this.textoVisao()}`,
@@ -99,6 +100,21 @@ AFRAME.registerComponent('debug-hud', {
       linhas.push('bola: inativa');
     }
     this.texto.setAttribute('text', 'value', linhas.join('\n'));
+  },
+
+  textoTentativa() {
+    const tentativa = this.cena.systems['game-state'].tentativaAtual();
+    const ciclo = this.cena.systems.tentativas;
+    if (!ciclo || ciclo.ciclo === 'inativo') return String(tentativa);
+    const pausa = ciclo.ciclo === 'pausa' ? ` ${(ciclo.restantePausaMs() / 1000).toFixed(1).replace('.', ',')} s` : '';
+    return `${tentativa}/${ciclo.total()} (${ciclo.ciclo}${pausa})`;
+  },
+
+  textoPlacar() {
+    const ciclo = this.cena.systems.tentativas;
+    if (!ciclo?.fase) return '-';
+    const { gols, tentativas } = ciclo.placar();
+    return `${gols} ${gols === 1 ? 'gol' : 'gols'} em ${tentativas}`;
   },
 
   textoVisao() {

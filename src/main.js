@@ -1,4 +1,5 @@
 import './systems/game-state.js';
+import './systems/tentativas.js';
 import './components/play-area.js';
 import './components/ball.js';
 import './components/ondas-sonoras.js';

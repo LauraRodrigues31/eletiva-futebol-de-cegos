@@ -1,7 +1,7 @@
 import { CONFIG } from './config.js';
 import { TODOS_EVENTOS } from './events.js';
 
-export const VERSAO = '0.2.0';
+export const VERSAO = '0.3.0';
 
 const params = new URLSearchParams(window.location.search);
 
