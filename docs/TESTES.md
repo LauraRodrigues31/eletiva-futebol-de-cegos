@@ -92,10 +92,11 @@ Com `?debug=1`, depois de preparar o chute, uma **linha azul** vai da bola até 
 
 ## 2. Testes automáticos (T1)
 
-Situação em 26/11: **146 testes, todos passando.**
+Situação em 27/11: **164 testes, todos passando.**
 
 | Arquivo | O que cobre | Testes |
 |---|---|---|
+| [`tests/tentativas.test.js`](../tests/tentativas.test.js) | 3 tentativas por fase jogável e 0 fora delas; só a 3ª é a última; próximo passo (próxima tentativa ou fim da fase); número de tentativas muda com o config; resultado do `goal` e de cada `reason` do `miss`; registro novo com a posição da bola; `anotarEvento` não altera o original; primeiro `ball-reached` define o tempo até a bola e os seguintes só contam; `kick` guarda mão, direção e momento; gol com `goalPosition` e trave com `postHit`; duração e onde a bola parou; `detail` do `attempt-end` e do `phase-end` (só a fase pedida, na ordem); placar da fase | 15 |
 | [`tests/brilho.test.js`](../tests/brilho.test.js) | Contorno = duas traves + travessão; caminho sobe a trave esquerda, atravessa o travessão e desce a direita; distâncias fora presas nas pontas; sem trecho fora da passagem; recomeça a cada intervalo; no meio de uma barra o trecho fica só nela, com o comprimento configurado; no canto se divide entre trave e travessão sem perder comprimento; entra pela base da trave esquerda e sai pela base da direita; por padrão só o `tutorial` tem brilho | 9 |
 | [`tests/ondas.test.js`](../tests/ondas.test.js) | Um item por arco; raio sempre entre o inicial e o final; primeiro arco nasce apagado no raio inicial; loop a cada período; arcos igualmente espaçados; acende no começo e apaga no fim do ciclo; por padrão só o `tutorial` tem ondas; cada fase define se tem ondas e a opacidade (limitada entre 0 e 1) | 8 |
 | [`tests/visao.test.js`](../tests/visao.test.js) | `?visao=1` abre com a visão livre e `?visao=0` vendado; sem o parâmetro ou com valor inválido vale o config | 2 |
@@ -105,7 +106,7 @@ Situação em 26/11: **146 testes, todos passando.**
 | [`tests/physics.test.js`](../tests/physics.test.js) | Atrito reduz a velocidade sem mudar a direção; a bola para abaixo da velocidade mínima e não anda para trás; passo de tempo limitado; distância percorrida = v² / (2a); chute padrão anda 15 m; rebote nas bandas laterais (face interna a 9,9 m, espelhado dos dois lados, perde velocidade lateral, chute na diagonal nunca entra na banda); voo em 3D (no chão igual ao rasteiro, gravidade sem atrito no ar, altura y0 + vy·t − g·t²/2, quique mais baixo e mais lento, quique fraco vira rolagem, bola lançada acaba parada no chão, banda preserva a altura) | 18 |
 | [`tests/goal.test.js`](../tests/goal.test.js) | Limites do gol (1,69 m) e da trave (1,97 m), com trave de 8 cm; lados da trave; limites mudam com a configuração; cruzamento interpolado (bola rápida não "pula" a trave); sem cruzamento indo para trás; rebote; limites do campo; gol em 3D (rede, travessão, por cima, fora); cruzamento interpola x e y; rebote no travessão | 12 |
 | [`tests/area.test.js`](../tests/area.test.js) | Limites da área para tamanhos diferentes; pontos dentro, fora e na borda; margem; saída e volta com histerese (sem evento repetido); conversão físico ↔ virtual com escala 1 e 2; escala padrão ≥ 2 (área 6 × 6 no campo); deslocamento do rig = (escala − 1) × cabeça; bola 0,5 m real dentro da borda da frente; gol a 6 m da marca | 12 |
-| [`tests/state-machine.test.js`](../tests/state-machine.test.js) | Estado inicial; todas as transições válidas e o reinício; transições inválidas rejeitadas sem mudar nada; tentativa 1 nas fases jogáveis; percorrer o jogo inteiro; eventos só valem no estado certo; próximo na sequência; `detail` do `state-change` (`from: null` na primeira emissão, `phase` = `to`, `attempt`) | 11 |
+| [`tests/state-machine.test.js`](../tests/state-machine.test.js) | Estado inicial; todas as transições válidas e o reinício; transições inválidas rejeitadas sem mudar nada; tentativa 1 nas fases jogáveis; percorrer o jogo inteiro; eventos só valem no estado certo; próximo na sequência; `detail` do `state-change` (`from: null` na primeira emissão, `phase` = `to`, `attempt`); `phase-end` leva `tutorial → fim-tutorial`, `fase2 → fase3`, `fase3 → resultado` e não vale nos outros estados; `avancarTentativa` soma 1 só em fase jogável e não altera o original | 14 |
 | [`tests/proximity.test.js`](../tests/proximity.test.js) | Distância no chão ignorando a altura; alcançar abaixo de 0,5 m; exatamente 0,5 m não alcança; histerese entre 0,5 e 0,7 m; afastar acima de 0,7 m; uma aproximação gera um único evento | 6 |
 
 Ao adicionar um arquivo de teste, inclua uma linha nesta tabela.
@@ -194,6 +195,27 @@ O chute tem duas etapas: preparar (E / grip) e chutar (clique ou espaço / gatil
 | L-GOL-05 | T2 | Sem `?debug=1` | Sem faixas, sem linha de mira | ✅ (Claude, headless) |
 | L-GOL-06 | T3 | Chutar na trave no Quest | Faixa vermelha coincide com a trave desenhada pelo estádio | ⏳ |
 
+### 3.6 Ciclo de tentativas (qui 26/11 e sex 27/11)
+
+Ordem esperada em cada tentativa: `ball-spawned → ... → goal | miss → ball-stopped → attempt-end → [pausa de 4 s] → ball-spawned` (ou, na última, `phase-end` + `state-change`).
+
+Dica: para não esperar 4 s a cada pausa, no console: `(await import('/src/config.js')).CONFIG.tentativas.pausaMs = 1500`.
+
+| Código | Tipo | Como fazer | Resultado esperado | Status |
+|---|---|---|---|---|
+| L-TENT-01 | T2 | `?debug=1&estado=tutorial`, chutar e esperar a bola parar | `attempt-end` com `attempt: 1, total: 3`, **depois** do `ball-stopped`; painel `tentativa: 1/3 (pausa ...)` | ✅ (Claude, headless) |
+| L-TENT-02 | T2 | Esperar a pausa | A bola volta à marca, `ball-spawned`, painel `2/3 (jogando)`, dica "andar" | ✅ (Claude, headless; dica não conferida) |
+| L-TENT-03 | T2 | Fazer as 3 tentativas | Depois da 3ª pausa: `phase-end` com 3 itens em `attempts` e `state-change` para `fim-tutorial` | ✅ (Claude, headless) |
+| L-TENT-04 | T2 | Fazer um gol | `attempt-end` com `result: 'goal', reason: null`, **depois** do `goal`; painel `placar: 1 gol em 1` | ✅ (Claude, headless) |
+| L-TENT-05 | T2 | Chutar na trave | `attempt-end` com `result: 'miss', reason: 'trave'`; registro com `postHit` | ⏳ (coberto pelo T1) |
+| L-TENT-06 | T2 | Apertar R antes de chutar | A tentativa não muda | ✅ (Claude, headless) |
+| L-TENT-07 | T2 | Apertar R durante a pausa | Vai direto para a próxima tentativa, com **um** `ball-spawned` só | ✅ (Claude, headless) |
+| L-TENT-08 | T2 | Apertar N durante a pausa | Troca de estado e nada mais acontece depois da pausa | ✅ (Claude, headless) |
+| L-TENT-09 | T2 | `?estado=fase2`, 3 tentativas | Vai para `fase3`; mais 3, vai para `resultado` | ✅ (Claude, headless) |
+| L-TENT-10 | T2 | Depois do tutorial, no console: `document.querySelector('a-scene').systems.tentativas.registros()` | 3 registros completos (tempo até a bola, chute, onde parou, duração) | ✅ (Claude, headless) |
+| L-TENT-11 | T2 | Ir até `resultado` e voltar ao `vestiario` | Registro vazio | ✅ (Claude, headless) |
+| L-TENT-12 | T3 | Fazer o tutorial no Quest, vendada | A pausa de 4 s parece certa? A pessoa percebe que começou outra tentativa? | ⏳ |
+
 ---
 
 ## 4. Checagens da Anna (áudio, visual e UX)
@@ -264,6 +286,7 @@ Feito pela dupla depois de cada merge na `main` que mude o jogo. Atualize os pas
 11. Apertar **A** para recolocar a bola. Preparar e chutar com a outra mão, mirando na trave (L-CHUTE-07, L-GOL-06).
 12. Apertar **A**, preparar, apontar o controle para o chão e chutar olhando para o gol (L-CHUTE-09).
 13. Apertar **B** até `resultado` e de novo: volta ao `vestiario` (L-ESTADO-06).
+14. Recarregar **sem** `?debug=1`. Colocar a venda, entrar em campo e fazer as 3 tentativas do tutorial (se possível: um gol, uma trave e um fora). Depois de cada uma, a bola volta sozinha depois da pausa e a dica volta para "andar". Depois da 3ª, o jogo chega ao `fim-tutorial` (L-TENT-12).
 
 **Anotar sempre:** altura do chão, sensação de escala, se o raio da bola parece certo, se a direção do chute bate com o controle, se a velocidade da bola parece natural, legibilidade do painel e qualquer enjoo. Registrar na seção 8.
 
@@ -298,6 +321,8 @@ Uma linha por sessão de teste, a mais recente no topo.
 
 | Data | Quem | Tipo | Versão / commit | Resultado | Observações |
 |---|---|---|---|---|---|
+| 27/11 | Claude | T2 (Chrome headless) | `v0.3.0` | ✅ L-TENT-01 a 04, 06 a 11 | Chute pelo caminho real (andar até a bola, E e espaço) na 1ª tentativa; as outras com `kick` emitido por código. Pausa reduzida para 1,5 s |
+| 27/11 | Claude | T1 | `v0.3.0` | ✅ 164/164 | Novos: `tentativas` e `phase-end` / `avancarTentativa` na máquina de estados |
 | 24/11 | Claude | T1 | campo integrado | ✅ 90/90 | Trave de 8 cm em `CONFIG.gol`, rebote nas bandas, sem `field-placeholder` e código sem comentários |
 | 24/11 | Claude | T1 | pós-conflito da `main` | ✅ 85/85 | Medidas oficiais da IBSA alinhadas no conflito da configuração |
 | 24/11 | Claude | T2 (Chrome headless) | `v0.2.0` | ✅ L-CHUTE-01 a 05, L-FISICA-01 a 04, L-GOL-01 a 05 | Mira do chute girando a câmera por código; trave a 23° e fora a 40° |

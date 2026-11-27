@@ -33,8 +33,8 @@ Os componentes do jogo conversam por **eventos emitidos na cena**. Assim a Laura
 | `goal` | ball (Laura) | game-state, torcida (Anna) | `{ position }` | qua 25/11 |
 | `post-hit` | ball (Laura) | Anna (onda na trave) | `{ side: 'left' \| 'right' \| 'top', position }` | qua 25/11 |
 | `miss` | ball (Laura) | game-state, Anna | `{ reason }` | qua 25/11 |
-| `attempt-end` | game-state (Laura) | Anna (tela de resultado) | `{ phase, attempt, result }` | qui 26/11 |
-| `phase-end` | game-state (Laura) | Anna (texto de transição) | `{ phase }` | qui 26/11 |
+| `attempt-end` | tentativas (Laura) | Anna (tela de resultado, torcida) | `{ phase, attempt, total, result, reason }` | sex 27/11 |
+| `phase-end` | tentativas (Laura) | game-state, Anna (texto de transição) | `{ phase, attempts }` | sex 27/11 |
 
 ### Detalhes
 
@@ -52,6 +52,8 @@ Os componentes do jogo conversam por **eventos emitidos na cena**. Assim a Laura
 - **`post-hit`**: `side` é `'left'` ou `'right'` (trave da esquerda ou da direita, do ponto de vista de quem chuta) ou `'top'` (travessão). `position` inclui a altura. Sempre vem seguido de um `miss` com `reason: 'trave'` (bater na trave ou no travessão conta como erro).
 - **`miss`**: `reason` é `'fora'` (passou ao lado do gol), `'alto'` (passou por cima do travessão), `'trave'` (bateu na trave), `'curta'` (parou antes do gol ou passou do tempo máximo, inclusive parando depois de rebater numa banda lateral) ou `'saiu'` (passou da linha de fundo de trás, em `z = 32`). Mirando no ar, a bola voa e quica antes de rolar. Pelas laterais a bola não sai: ela rebate nas bandas e continua rolando.
 - **`ball-stopped`**: a bola parou depois de um chute. Depois dele, a bola espera ser recolocada (pelo ciclo de tentativas ou pelo modo debug), o que gera um novo `ball-spawned`.
+- **`attempt-end`**: a tentativa terminou. Sai logo depois do `ball-stopped`, no mesmo quadro. `phase` é `'tutorial'`, `'fase2'` ou `'fase3'`; `attempt` começa em 1; `total` é `CONFIG.tentativas[phase]` (3); `result` é `'goal'` ou `'miss'`; `reason` é o `reason` do `miss` (`'fora'`, `'alto'`, `'trave'`, `'curta'`, `'saiu'`) ou `null` no gol.
+- **`phase-end`**: a última tentativa da fase terminou e a pausa acabou. `attempts` é a lista de `{ attempt, result, reason }` da fase, na ordem (para a tela dizer "você fez 1 gol em 3"). O `game-state` ouve o `phase-end` e troca de estado no mesmo quadro: quem ouve os dois pode receber o `state-change` **antes** do `phase-end`.
 
 ### Ordem dos eventos em cada chute
 
@@ -61,6 +63,25 @@ ball-reached → kick-ready → kick → (post-hit)? → goal | miss → ball-st
 
 - Todo chute termina com **exatamente um** `goal` **ou** um `miss`.
 - Depois do `kick`, a bola **para de emitir** `ball-reached` e `ball-left` até o próximo `ball-spawned` (assim o balão não reaparece com a bola rolando).
+
+### Ciclo de tentativas
+
+Cada fase jogável (`tutorial`, `fase2`, `fase3`) tem `CONFIG.tentativas[fase]` tentativas (3). Quem conta é o system `tentativas`:
+
+```
+ball-spawned → ... → goal | miss → ball-stopped
+  → attempt-end
+  → [pausa de CONFIG.tentativas.pausaMs = 4 s]   tela de resultado e torcida (Anna)
+  → ball-spawned                                  próxima tentativa, se não foi a última
+  → phase-end + state-change                      fim da fase, se foi a última
+```
+
+- `goal` e `miss` saem **antes** do `attempt-end`: a torcida pode reagir no `goal`, sem esperar a bola parar.
+- A tentativa atual está em `sceneEl.systems['game-state'].tentativaAtual()`. Ela já vale o número da próxima tentativa quando sai o `ball-spawned`.
+- A próxima tentativa começa sozinha depois da pausa (a pessoa está vendada, então não depende de botão). Não há tempo limite para achar a bola.
+- **R / botão A:** antes do chute, recoloca a bola e a **mesma** tentativa recomeça (não conta). Com a bola rolando, recoloca e a tentativa recomeça, sem `attempt-end`. Durante a pausa, **pula a pausa** e vai direto para a próxima tentativa (ou para o fim da fase).
+- Trocar de estado no meio da pausa (N no debug) cancela a pausa: nada acontece depois.
+- O registro completo de cada tentativa (tempo até a bola, chute, onde parou...) fica em `sceneEl.systems.tentativas.registros()`. Ele é zerado ao voltar ao `vestiario`.
 
 ## Estados do jogo
 
@@ -73,10 +94,10 @@ vestiario → entrada-campo → tutorial → fim-tutorial → fase2 → fase3 �
 | `vestiario` | início (e reinício) | Pessoa coloca a venda (Anna). |
 | `entrada-campo` | `blindfold-on` | Transição e som do estádio (Anna). |
 | `tutorial` | `field-entered` | 3 tentativas com pistas visuais. |
-| `fim-tutorial` | fim das tentativas do tutorial | Tela "agora vale pontos" (Anna). |
+| `fim-tutorial` | `phase-end` do `tutorial` | Tela "agora vale pontos" (Anna). |
 | `fase2` | `continue` | Bola em posição aleatória, sem pistas. |
-| `fase3` | fim das tentativas da fase 2 | Bola em movimento. |
-| `resultado` | fim das tentativas da fase 3 | Ficha técnica e replay. |
+| `fase3` | `phase-end` da `fase2` | Bola em movimento. |
+| `resultado` | `phase-end` da `fase3` | Ficha técnica e replay. |
 | `vestiario` | `continue` no `resultado` | Reinicia para a próxima pessoa. |
 
 O estado atual pode ser lido a qualquer momento:
@@ -89,7 +110,7 @@ const estado = sceneEl.systems['game-state'].estadoAtual(); // 'tutorial'
 
 | Id | O que é | Observação para a Anna |
 |---|---|---|
-| `#rig` | Jogador (origem) | Componentes `kicker` (chute) e `controles-jogador` (R / botão A recoloca a bola; no computador, volta a câmera ao centro ao entrar em campo) |
+| `#rig` | Jogador (origem) | Componentes `kicker` (chute) e `controles-jogador` (R / botão A recoloca a bola, seguindo as regras do ciclo de tentativas; no computador, volta a câmera ao centro ao entrar em campo) |
 | `#camera` | Cabeça do jogador | Para efeitos presos à visão (venda) |
 | `#mao-esquerda`, `#mao-direita` | Controles do Quest | Botões e gatilho |
 | `#bola` | Bola | **Coloque o guizo aqui** (`sound` posicional): ele acompanha a bola sozinho. O componente `ball` não mexe em som. O componente `ondas-sonoras` (Dev B), na mesma entidade, desenha os arcos `( ● )` por cima da venda nas fases com `CONFIG.ondas.fases[fase].ativa` (padrão: só o `tutorial`), com a opacidade da fase |
