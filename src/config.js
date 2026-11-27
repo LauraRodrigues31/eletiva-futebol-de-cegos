@@ -62,6 +62,7 @@ export const CONFIG = {
     tutorial: 3,
     fase2: 3,
     fase3: 3,
+    pausaMs: 4000,
   },
 
   intervalos: {

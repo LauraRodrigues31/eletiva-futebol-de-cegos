@@ -6,6 +6,7 @@ import {
   entrarEm,
   transicionar,
   podeIr,
+  avancarTentativa,
   destinoPorEvento,
   proximoNaSequencia,
   detalheStateChange,
@@ -58,6 +59,11 @@ AFRAME.registerSystem('game-state', {
     }
     this.aplicar(r.dados, this.dados.estado);
     return true;
+  },
+
+  avancarTentativa() {
+    this.dados = avancarTentativa(this.dados);
+    return this.dados.tentativa;
   },
 
   avancarDebug() {

@@ -11,6 +11,7 @@ import {
   proximoNaSequencia,
   entrarEm,
   detalheStateChange,
+  avancarTentativa,
 } from '../src/logic/state-machine.js';
 
 test('começa no vestiário, sem tentativa', () => {
@@ -99,4 +100,24 @@ test('detail do state-change: phase sempre igual a to', () => {
 test('estadoValido', () => {
   assert.equal(estadoValido('fase2'), true);
   assert.equal(estadoValido('fase4'), false);
+});
+
+test('phase-end leva cada fase jogável para a próxima etapa', () => {
+  assert.equal(destinoPorEvento(ESTADOS.TUTORIAL, 'phase-end'), ESTADOS.FIM_TUTORIAL);
+  assert.equal(destinoPorEvento(ESTADOS.FASE2, 'phase-end'), ESTADOS.FASE3);
+  assert.equal(destinoPorEvento(ESTADOS.FASE3, 'phase-end'), ESTADOS.RESULTADO);
+});
+
+test('phase-end não vale fora das fases jogáveis', () => {
+  for (const estado of [ESTADOS.VESTIARIO, ESTADOS.ENTRADA_CAMPO, ESTADOS.FIM_TUTORIAL, ESTADOS.RESULTADO]) {
+    assert.equal(destinoPorEvento(estado, 'phase-end'), null, estado);
+  }
+});
+
+test('avancarTentativa soma 1 só em fase jogável e não altera o original', () => {
+  const dados = { estado: ESTADOS.TUTORIAL, tentativa: 1 };
+  assert.deepEqual(avancarTentativa(dados), { estado: 'tutorial', tentativa: 2 });
+  assert.deepEqual(dados, { estado: 'tutorial', tentativa: 1 });
+  const fora = { estado: ESTADOS.FIM_TUTORIAL, tentativa: 0 };
+  assert.equal(avancarTentativa(fora), fora);
 });
