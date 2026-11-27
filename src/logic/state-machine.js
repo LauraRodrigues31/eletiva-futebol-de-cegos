@@ -35,6 +35,11 @@ export const GATILHOS = Object.freeze({
     [ESTADOS.FIM_TUTORIAL]: ESTADOS.FASE2,
     [ESTADOS.RESULTADO]: ESTADOS.VESTIARIO,
   },
+  'phase-end': {
+    [ESTADOS.TUTORIAL]: ESTADOS.FIM_TUTORIAL,
+    [ESTADOS.FASE2]: ESTADOS.FASE3,
+    [ESTADOS.FASE3]: ESTADOS.RESULTADO,
+  },
 });
 
 export const FASES_JOGAVEIS = Object.freeze([ESTADOS.TUTORIAL, ESTADOS.FASE2, ESTADOS.FASE3]);
@@ -62,6 +67,11 @@ export function entrarEm(estado) {
 export function transicionar(dados, para) {
   if (!podeIr(dados.estado, para)) return { ok: false, dados };
   return { ok: true, dados: entrarEm(para) };
+}
+
+export function avancarTentativa(dados) {
+  if (!ehFaseJogavel(dados.estado)) return dados;
+  return { ...dados, tentativa: dados.tentativa + 1 };
 }
 
 export function destinoPorEvento(estado, evento) {
